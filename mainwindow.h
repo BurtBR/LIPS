@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QDateTime>
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,5 +24,11 @@ public:
     ~MainWindow();
 
     bool Init();
+
+private slots:
+    void On_buttonOpenFile_clicked();
+
+signals:
+
 };
 #endif // MAINWINDOW_H
