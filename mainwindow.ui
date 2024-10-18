@@ -157,6 +157,13 @@ QToolButton{
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="checkPosition">
+            <property name="text">
+             <string>Position</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Orientation::Vertical</enum>
@@ -197,6 +204,9 @@ QToolButton{
             <property name="text">
              <string/>
             </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
            </widget>
           </item>
           <item>
@@ -215,7 +225,7 @@ QToolButton{
              </spacer>
             </item>
             <item>
-             <widget class="QToolButton" name="toolButton_2">
+             <widget class="QToolButton" name="buttonStop">
               <property name="minimumSize">
                <size>
                 <width>40</width>
@@ -247,7 +257,7 @@ QToolButton{
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="toolButton">
+             <widget class="QToolButton" name="buttonPlay">
               <property name="minimumSize">
                <size>
                 <width>40</width>
