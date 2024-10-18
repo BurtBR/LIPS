@@ -1,4 +1,7 @@
 #include "workervideo.h"
+#include <QFileInfo>
+#include <QVideoSink>
+#include <QMediaMetaData>
 
 WorkerVideo::WorkerVideo(QObject *parent) : QObject{parent}{
 
@@ -40,6 +43,8 @@ void WorkerVideo::Init(){
     connect(this, &WorkerVideo::PlayerStop, _player, &QMediaPlayer::stop);
     connect(this, &WorkerVideo::PlayerSetSource, _player, &QMediaPlayer::setSource);
     connect(_player, &QMediaPlayer::destroyed, sink, &QVideoSink::deleteLater);
+    connect(_player, &QMediaPlayer::mediaStatusChanged, this, &WorkerVideo::MediaStatusChanged);
+    connect(_player, &QMediaPlayer::metaDataChanged, this, &WorkerVideo::MediaMetadataChanged);
     connect(sink, &QVideoSink::videoFrameChanged, this, &WorkerVideo::ProcessFrame);
 }
 
@@ -67,7 +72,22 @@ void WorkerVideo::MediaStatusChanged(QMediaPlayer::MediaStatus status){
     }
 }
 
+void WorkerVideo::MediaMetadataChanged(){
+    _currentFPS = _player->metaData().value(QMediaMetaData::VideoFrameRate).toFloat();
+    emit ErrorMessage("WorkerVideo: " + QString::number(_currentFPS) + " FPS");
+}
+
 void WorkerVideo::Play(){
+    if(!_player){
+        emit ErrorMessage("WorkerVideo: Player not initialized");
+        emit EndOfMedia();
+    }
+
+    if(!_player->hasVideo()){
+        emit ErrorMessage("WorkerVideo: No media to play");
+        emit EndOfMedia();
+    }
+
     emit PlayerPlay();
 }
 

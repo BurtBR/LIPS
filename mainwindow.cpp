@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QFileDialog>
+#include <QDateTime>
 #include "workervideo.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
@@ -90,6 +92,7 @@ void MainWindow::FrameReady(QPixmap frame){
 
 void MainWindow::VideoEnded(){
     _isPlaying = false;
+    _ui->buttonPlay->setIcon(QIcon(":/Figures/Play.png"));
 }
 
 void MainWindow::On_buttonOpenFile_clicked(){
@@ -101,12 +104,17 @@ void MainWindow::On_buttonOpenFile_clicked(){
 void MainWindow::On_buttonPlay_clicked(){
     _isPlaying ^= 1;
 
-    if(_isPlaying)
+    if(_isPlaying){
+        _ui->buttonPlay->setIcon(QIcon(":/Figures/Pause.png"));
         emit VideoPlay();
-    else
-        emit VideoStop();
+    }else{
+        _ui->buttonPlay->setIcon(QIcon(":/Figures/Play.png"));
+        emit VideoPause();
+    }
 }
 
 void MainWindow::On_buttonStop_clicked(){
     emit VideoStop();
+    _ui->buttonPlay->setIcon(QIcon(":/Figures/Play.png"));
+    _isPlaying = false;
 }

@@ -2,9 +2,7 @@
 #define WORKERVIDEO_H
 
 #include <QObject>
-#include <QFileInfo>
 #include <QMediaPlayer>
-#include <QVideoSink>
 #include <QVideoFrame>
 #include <QPixmap>
 
@@ -13,6 +11,7 @@ class WorkerVideo : public QObject{
 
 private:
     QMediaPlayer *_player = nullptr;
+    float _currentFPS = 0;
     bool _filter = false, _distortion = false, _saturation = false, _position = false;
 
 public:
@@ -22,6 +21,7 @@ public:
 private slots:
     void ProcessFrame(QVideoFrame frame);
     void MediaStatusChanged(QMediaPlayer::MediaStatus status);
+    void MediaMetadataChanged();
 
 public slots:
     void Init();

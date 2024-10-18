@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QDateTime>
-#include <QFileDialog>
 #include <QThread>
 
 QT_BEGIN_NAMESPACE
