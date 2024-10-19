@@ -12,7 +12,6 @@ class WorkerVideo : public QObject{
 private:
     QMediaPlayer *_player = nullptr;
     qint64  _mediasize = 0;
-    bool _filter = false, _distortion = false, _saturation = false, _position = false;
 
 public:
     WorkerVideo(QObject *parent = nullptr);
@@ -32,7 +31,7 @@ public slots:
     void Pause();
 
 signals:
-    void FrameReady(QPixmap);
+    void FrameReady(QImage);
     void ErrorMessage(QString);
     void PlayerPlay();
     void PlayerStop();

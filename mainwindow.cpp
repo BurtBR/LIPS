@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QDateTime>
 #include "workervideo.h"
+#include "workerimageprocessing.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
@@ -10,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
 
 MainWindow::~MainWindow(){
     DeleteThread(&_threadVideo);
+    DeleteThread(&_threadImageProcessing);
     delete _ui;
 }
 
@@ -47,27 +49,58 @@ bool MainWindow::StartThreadVideo(){
         return false;
 
     WorkerVideo *worker= nullptr;
+    WorkerImageProcessing *workerImage = nullptr;
 
     try{
-        _threadVideo = new QThread();
+        _threadVideo = new QThread;
     }catch(...){
         _threadVideo = nullptr;
         return false;
     }
 
     try{
-        worker = new WorkerVideo();
+        _threadImageProcessing = new QThread;
     }catch(...){
         delete _threadVideo;
         _threadVideo = nullptr;
+        _threadImageProcessing = nullptr;
         return false;
     }
 
+    try{
+        worker = new WorkerVideo;
+    }catch(...){
+        delete _threadVideo;
+        _threadVideo = nullptr;
+        delete _threadImageProcessing;
+        _threadImageProcessing = nullptr;
+        return false;
+    }
+
+    try{
+        workerImage = new WorkerImageProcessing;
+    }catch(...){
+        delete _threadVideo;
+        _threadVideo = nullptr;
+        delete _threadImageProcessing;
+        _threadImageProcessing = nullptr;
+        delete worker;
+        worker = nullptr;
+        return false;
+    }
+
+    connect(_threadImageProcessing, &QThread::finished, workerImage, &WorkerImageProcessing::deleteLater);
     connect(_threadVideo, &QThread::finished, worker, &WorkerVideo::deleteLater);
+
     connect(worker, &WorkerVideo::ErrorMessage, this, &MainWindow::ConsoleMessage);
     connect(worker, &WorkerVideo::EndOfMedia, this, &MainWindow::VideoEnded);
-    connect(worker, &WorkerVideo::FrameReady, this, &MainWindow::FrameReady);
     connect(worker, &WorkerVideo::ProgressChanged, this, &MainWindow::VideoProgressChanged);
+
+    connect(workerImage, &WorkerImageProcessing::FrameReady, this, &MainWindow::FrameReady);
+
+    connect(worker, &WorkerVideo::FrameReady, workerImage, &WorkerImageProcessing::ProcessFrame);
+    connect(worker, &WorkerVideo::VideoFPSChanged, workerImage, &WorkerImageProcessing::SetFPS);
+
     connect(this, &MainWindow::VideoPlayerInit, worker, &WorkerVideo::Init);
     connect(this, &MainWindow::VideoSetFileName, worker, &WorkerVideo::SetFilename);
     connect(this, &MainWindow::VideoPlay, worker, &WorkerVideo::Play);
@@ -75,6 +108,8 @@ bool MainWindow::StartThreadVideo(){
     connect(this, &MainWindow::VideoStop, worker, &WorkerVideo::Stop);
 
     worker->moveToThread(_threadVideo);
+    workerImage->moveToThread(_threadImageProcessing);
+    _threadImageProcessing->start();
     _threadVideo->start();
 
     return true;

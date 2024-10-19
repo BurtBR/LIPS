@@ -63,8 +63,7 @@ void WorkerVideo::SetFilename(QString filename){
 void WorkerVideo::ProcessFrame(QVideoFrame frame){
     if(!frame.isValid())
         return;
-    QImage frameimage = frame.toImage();
-    emit FrameReady(QPixmap::fromImage(frameimage));
+    emit FrameReady(frame.toImage());
 }
 
 void WorkerVideo::MediaStatusChanged(QMediaPlayer::MediaStatus status){

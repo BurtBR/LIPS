@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow{
 
 private:
     Ui::MainWindow *_ui;
-    QThread *_threadVideo = nullptr;
+    QThread *_threadVideo = nullptr, *_threadImageProcessing;
     bool _isPlaying = false;
 
     void DeleteThread(QThread **threadptr);
