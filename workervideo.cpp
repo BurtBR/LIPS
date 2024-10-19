@@ -58,6 +58,8 @@ void WorkerVideo::SetFilename(QString filename){
 
     emit PlayerSetSource(QUrl(filename));
     emit ErrorMessage("WorkerVideo: File loaded " + filename);
+    _first = true;
+    emit PlayerPlay();
 }
 
 void WorkerVideo::SetScale(int scale){
@@ -68,7 +70,12 @@ void WorkerVideo::SetScale(int scale){
 void WorkerVideo::ProcessFrame(QVideoFrame frame){
     if(!frame.isValid())
         return;
+
+    if(_first)
+        emit PlayerStop();
+
     emit FrameReady(frame.toImage().scaled(_scalewidth,_scalewidth,Qt::KeepAspectRatio));
+    emit FrameSent();
 }
 
 void WorkerVideo::MediaStatusChanged(QMediaPlayer::MediaStatus status){

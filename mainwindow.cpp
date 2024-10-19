@@ -40,7 +40,7 @@ bool MainWindow::Init(){
 
     emit VideoPlayerInit();
 
-    _ui->spinScale->setValue(800);
+    _ui->spinScale->setValue(700);
     _ui->spinSaturation->setValue(230);
 
     return true;
@@ -98,6 +98,7 @@ bool MainWindow::StartThreadVideo(){
     connect(worker, &WorkerVideo::ErrorMessage, this, &MainWindow::ConsoleMessage);
     connect(worker, &WorkerVideo::EndOfMedia, this, &MainWindow::VideoEnded);
     connect(worker, &WorkerVideo::ProgressChanged, this, &MainWindow::VideoProgressChanged);
+    connect(worker, &WorkerVideo::FrameSent, this, &MainWindow::VideoSentFrame);
 
     connect(workerImage, &WorkerImageProcessing::FrameReady, this, &MainWindow::FrameReady);
 
@@ -130,6 +131,8 @@ void MainWindow::FrameReady(QPixmap frame){
     int h = _ui->labelImage->height()-10;
 
     _ui->labelImage->setPixmap(frame.scaled(w, h, Qt::KeepAspectRatio));
+
+    _frameBalance--;
 }
 
 void MainWindow::VideoProgressChanged(int filled){
@@ -139,6 +142,23 @@ void MainWindow::VideoProgressChanged(int filled){
 void MainWindow::VideoEnded(){
     _isPlaying = false;
     _ui->buttonPlay->setIcon(QIcon(":/Figures/Play.png"));
+}
+
+void MainWindow::VideoSentFrame(){
+    _frameBalance++;
+
+    if(_frameBalance > 5){
+        ConsoleMessage("<font color=\"Red\">MainWindow: " + QString::number(_frameBalance) + " frames behind");
+    }
+
+    if(_ui->checkStopSync->isChecked()){
+        if(_frameBalance > 15){
+            On_buttonStop_clicked();
+            ConsoleMessage("<font color=\"Red\">MainWindow: Video interrupted due to inability to maintain sync with the video");
+        }else if(_frameBalance > 10){
+            ConsoleMessage("<font color=\"Red\">MainWindow: Unable to maintain sync with the video.");
+        }
+    }
 }
 
 void MainWindow::On_buttonOpenFile_clicked(){

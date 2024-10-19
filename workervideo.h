@@ -13,6 +13,7 @@ private:
     QMediaPlayer *_player = nullptr;
     qint64  _mediasize = 0;
     uint32_t _scalewidth = 500;
+    bool _first = false;
 
 public:
     WorkerVideo(QObject *parent = nullptr);
@@ -42,6 +43,7 @@ signals:
     void PlayerSetSource(QUrl);
     void ProgressChanged(int);
     void VideoFPSChanged(float);
+    void FrameSent();
 };
 
 #endif // WORKERVIDEO_H

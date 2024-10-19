@@ -17,6 +17,7 @@ private:
     Ui::MainWindow *_ui;
     QThread *_threadVideo = nullptr, *_threadImageProcessing;
     bool _isPlaying = false;
+    int _frameBalance = 0;
 
     void DeleteThread(QThread **threadptr);
     bool StartThreadVideo();
@@ -32,6 +33,7 @@ private slots:
     void FrameReady(QPixmap frame);
     void VideoProgressChanged(int filled);
     void VideoEnded();
+    void VideoSentFrame();
     void On_buttonOpenFile_clicked();
     void On_buttonPlay_clicked();
     void On_buttonStop_clicked();
