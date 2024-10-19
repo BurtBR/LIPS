@@ -185,12 +185,11 @@ QVector<QRect> WorkerImageProcessing::GroupSaturation(QImage &frame){
             if(frame.pixel(x,y)&0b1){
                 anchoraux = QRect(x,y,1,1);
                 RecursiveGroup(frame, x, y, anchoraux);
-                if( (anchoraux.width() < _minradius) ||
+                if(!((anchoraux.width() < _minradius) ||
                     (anchoraux.width() > _maxradius) ||
                     (anchoraux.height() < _minradius) ||
-                    (anchoraux.height() > _maxradius)){
-                    // DO NOTHING
-                }else{
+                    (anchoraux.height() > _maxradius))){
+                    // IF ANCHOR SIZES INSIDE RADIUS
                     anchors.append(anchoraux);
                 }
             }
