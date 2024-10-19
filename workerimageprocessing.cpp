@@ -52,10 +52,10 @@ int WorkerImageProcessing::MultIfValidPixel(QImage &frame, int x, int y, int &va
 
 void WorkerImageProcessing::ProcessFrame(QImage frame){
 
-    frame = frame.convertToFormat(QImage::Format_Grayscale8);
-
-    ThresholdImage(frame);
-    FilterImage(frame);
+    if(_saturation)
+        ThresholdImage(frame);
+    if(_filter)
+        FilterImage(frame);
 
     emit FrameReady(QPixmap::fromImage(frame));
 }
@@ -64,7 +64,23 @@ void WorkerImageProcessing::SetFPS(float fps){
     _fps = fps;
 }
 
-void WorkerImageProcessing::SetSaturation(int value){
+void WorkerImageProcessing::SetThreshold(int value){
     if(value > 0 && value < 255)
         _threshold = value;
+}
+
+void WorkerImageProcessing::SetSaturationOn(bool condition){
+    _saturation = condition;
+}
+
+void WorkerImageProcessing::SetFilterOn(bool condition){
+    _filter = condition;
+}
+
+void WorkerImageProcessing::SetDistortionOn(bool condition){
+    _distortion = condition;
+}
+
+void WorkerImageProcessing::SetPositionOn(bool condition){
+    _positioning = condition;
 }

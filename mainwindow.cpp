@@ -112,7 +112,11 @@ bool MainWindow::StartThreadVideo(){
     connect(this, &MainWindow::VideoStop, worker, &WorkerVideo::Stop);
 
     connect(_ui->spinScale, &QSpinBox::valueChanged, worker, &WorkerVideo::SetScale);
-    connect(_ui->spinSaturation, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetSaturation);
+    connect(_ui->spinSaturation, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetThreshold);
+    connect(_ui->checkSaturation, &QCheckBox::stateChanged, workerImage, &WorkerImageProcessing::SetSaturationOn);
+    connect(_ui->checkFilter, &QCheckBox::stateChanged, workerImage, &WorkerImageProcessing::SetFilterOn);
+    connect(_ui->checkDistortion, &QCheckBox::stateChanged, workerImage, &WorkerImageProcessing::SetDistortionOn);
+    connect(_ui->checkPosition, &QCheckBox::stateChanged, workerImage, &WorkerImageProcessing::SetPositionOn);
 
     worker->moveToThread(_threadVideo);
     workerImage->moveToThread(_threadImageProcessing);

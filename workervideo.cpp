@@ -71,10 +71,12 @@ void WorkerVideo::ProcessFrame(QVideoFrame frame){
     if(!frame.isValid())
         return;
 
-    if(_first)
+    if(_first){
+        _first = false;
         emit PlayerStop();
+    }
 
-    emit FrameReady(frame.toImage().scaled(_scalewidth,_scalewidth,Qt::KeepAspectRatio));
+    emit FrameReady(frame.toImage().scaled(_scalewidth,_scalewidth,Qt::KeepAspectRatio).convertToFormat(QImage::Format_Grayscale8));
     emit FrameSent();
 }
 

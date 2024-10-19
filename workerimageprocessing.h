@@ -13,6 +13,7 @@ class WorkerImageProcessing : public QObject{
 private:
     float _fps = 0;
     uint8_t _threshold = 230;
+    bool _saturation = false, _filter = false, _distortion = false, _positioning = false;
 
     void ThresholdImage(QImage &frame);
     void FilterImage(QImage &frame);
@@ -24,7 +25,11 @@ public:
 public slots:
     void ProcessFrame(QImage frame);
     void SetFPS(float fps);
-    void SetSaturation(int value);
+    void SetThreshold(int value);
+    void SetSaturationOn(bool condition);
+    void SetFilterOn(bool condition);
+    void SetDistortionOn(bool condition);
+    void SetPositionOn(bool condition);
 
 signals:
     void FrameReady(QPixmap frame);
