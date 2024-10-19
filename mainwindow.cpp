@@ -45,6 +45,8 @@ bool MainWindow::Init(){
 
     _ui->spinScale->setValue(700);
     _ui->spinSaturation->setValue(230);
+    _ui->spinMinRadius->setValue(5);
+    _ui->spinMaxRadius->setValue(20);
 
     return true;
 }
@@ -117,6 +119,8 @@ bool MainWindow::StartThreadVideo(){
 
     connect(_ui->spinScale, &QSpinBox::valueChanged, worker, &WorkerVideo::SetScale);
     connect(_ui->spinSaturation, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetThreshold);
+    connect(_ui->spinMinRadius, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetMinRadius);
+    connect(_ui->spinMaxRadius, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetMaxRadius);
     connect(_ui->checkSaturation, &QCheckBox::stateChanged, workerImage, &WorkerImageProcessing::SetSaturationOn);
     connect(_ui->checkFilter, &QCheckBox::stateChanged, workerImage, &WorkerImageProcessing::SetFilterOn);
     connect(_ui->checkDistortion, &QCheckBox::stateChanged, workerImage, &WorkerImageProcessing::SetDistortionOn);
