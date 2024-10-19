@@ -75,3 +75,5 @@ install(TARGETS LIPS
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(LIPS)
 endif()
+
+file(COPY Videos DESTINATION ${CMAKE_BINARY_DIR})
