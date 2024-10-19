@@ -20,34 +20,132 @@ void WorkerImageProcessing::FilterImage(QImage &frame){
     int kernel[9] = {-1, -1, -1,
                      -1,  8, -1,
                      -1, -1, -1};
-    int multvalue;
+    int multvalue, y, x, limitx, limity;
     uint8_t color;
 
     QImage filtered(frame.size(),QImage::Format_Grayscale8);
 
-    for(int y=0; y<frame.height() ;y++){
-        for(int x=0; x<frame.width() ;x++){
+    limity = frame.height()-1;
+    limitx = frame.width()-1;
+
+    // MIDDLE OF IMAGE
+    for(y=1; y<limity ;y++){
+        for(x=1; x<limitx ;x++){
             multvalue = 0;
-            multvalue += MultIfValidPixel(frame, x-1, y-1, kernel[0]);
-            multvalue += MultIfValidPixel(frame,   x, y-1, kernel[1]);
-            multvalue += MultIfValidPixel(frame, x+1, y-1, kernel[2]);
-            multvalue += MultIfValidPixel(frame, x-1, y,   kernel[3]);
-            multvalue += MultIfValidPixel(frame,   x, y,   kernel[4]);
-            multvalue += MultIfValidPixel(frame, x+1, y,   kernel[5]);
-            multvalue += MultIfValidPixel(frame, x-1, y+1, kernel[6]);
-            multvalue += MultIfValidPixel(frame,   x, y+1, kernel[7]);
-            multvalue += MultIfValidPixel(frame, x+1, y+1, kernel[8]);
+            multvalue += ((frame.pixel(x-1,y-1)&0xFF)*kernel[0]);
+            multvalue += ((frame.pixel(  x,y-1)&0xFF)*kernel[1]);
+            multvalue += ((frame.pixel(x+1,y-1)&0xFF)*kernel[2]);
+            multvalue += ((frame.pixel(x-1,  y)&0xFF)*kernel[3]);
+            multvalue += ((frame.pixel(  x,  y)&0xFF)*kernel[4]);
+            multvalue += ((frame.pixel(x+1,  y)&0xFF)*kernel[5]);
+            multvalue += ((frame.pixel(x-1,y+1)&0xFF)*kernel[6]);
+            multvalue += ((frame.pixel(  x,y+1)&0xFF)*kernel[7]);
+            multvalue += ((frame.pixel(x+1,y+1)&0xFF)*kernel[8]);
             color = multvalue;
             filtered.setPixel(x, y, (0xFF<<24) | (color<<16) | (color<<8) | (color));
         }
     }
-    frame = filtered;
-}
 
-int WorkerImageProcessing::MultIfValidPixel(QImage &frame, int x, int y, int &value){
-    if(x<0 || y<0 || x>=frame.width() || y>=frame.height())
-        return 0;
-    return (frame.pixel(x,y)&0xFF)*value;
+    //BORDERS y=0
+    y=0;
+    for(x=1; x<limitx ;x++){
+        multvalue = 0;
+        multvalue += ((frame.pixel(x-1,  y)&0xFF)*kernel[3]);
+        multvalue += ((frame.pixel(  x,  y)&0xFF)*kernel[4]);
+        multvalue += ((frame.pixel(x+1,  y)&0xFF)*kernel[5]);
+        multvalue += ((frame.pixel(x-1,y+1)&0xFF)*kernel[6]);
+        multvalue += ((frame.pixel(  x,y+1)&0xFF)*kernel[7]);
+        multvalue += ((frame.pixel(x+1,y+1)&0xFF)*kernel[8]);
+        color = multvalue;
+        filtered.setPixel(x, y, (0xFF<<24) | (color<<16) | (color<<8) | (color));
+    }
+
+    //BORDERS y=height-1
+    y = limity;
+    for(x=1; x<limitx ;x++){
+        multvalue = 0;
+        multvalue += ((frame.pixel(x-1,y-1)&0xFF)*kernel[0]);
+        multvalue += ((frame.pixel(  x,y-1)&0xFF)*kernel[1]);
+        multvalue += ((frame.pixel(x+1,y-1)&0xFF)*kernel[2]);
+        multvalue += ((frame.pixel(x-1,  y)&0xFF)*kernel[3]);
+        multvalue += ((frame.pixel(  x,  y)&0xFF)*kernel[4]);
+        multvalue += ((frame.pixel(x+1,  y)&0xFF)*kernel[5]);
+        color = multvalue;
+        filtered.setPixel(x, y, (0xFF<<24) | (color<<16) | (color<<8) | (color));
+    }
+
+    //BORDERS x=0
+    x=0;
+    for(y=1; y<limity ;y++){
+        multvalue = 0;
+        multvalue += ((frame.pixel(  x,y-1)&0xFF)*kernel[1]);
+        multvalue += ((frame.pixel(x+1,y-1)&0xFF)*kernel[2]);
+        multvalue += ((frame.pixel(  x,  y)&0xFF)*kernel[4]);
+        multvalue += ((frame.pixel(x+1,  y)&0xFF)*kernel[5]);
+        multvalue += ((frame.pixel(  x,y+1)&0xFF)*kernel[7]);
+        multvalue += ((frame.pixel(x+1,y+1)&0xFF)*kernel[8]);
+        color = multvalue;
+        filtered.setPixel(x, y, (0xFF<<24) | (color<<16) | (color<<8) | (color));
+    }
+
+    //BORDERS x=width-1
+    x = limitx;
+    for(y=1; y<limity ;y++){
+        multvalue = 0;
+        multvalue += ((frame.pixel(x-1,y-1)&0xFF)*kernel[0]);
+        multvalue += ((frame.pixel(  x,y-1)&0xFF)*kernel[1]);
+        multvalue += ((frame.pixel(x-1,  y)&0xFF)*kernel[3]);
+        multvalue += ((frame.pixel(  x,  y)&0xFF)*kernel[4]);
+        multvalue += ((frame.pixel(x-1,y+1)&0xFF)*kernel[6]);
+        multvalue += ((frame.pixel(  x,y+1)&0xFF)*kernel[7]);
+        color = multvalue;
+        filtered.setPixel(x, y, (0xFF<<24) | (color<<16) | (color<<8) | (color));
+    }
+
+    //CORNERS x=y=0
+    x = y = 0;
+    multvalue = 0;
+    multvalue += ((frame.pixel(  x,  y)&0xFF)*kernel[4]);
+    multvalue += ((frame.pixel(x+1,  y)&0xFF)*kernel[5]);
+    multvalue += ((frame.pixel(  x,y+1)&0xFF)*kernel[7]);
+    multvalue += ((frame.pixel(x+1,y+1)&0xFF)*kernel[8]);
+    color = multvalue;
+    filtered.setPixel(x, y, (0xFF<<24) | (color<<16) | (color<<8) | (color));
+
+    //CORNERS x=y=end-1
+    x = limitx;
+    y = limity;
+    multvalue = 0;
+    multvalue += ((frame.pixel(x-1,y-1)&0xFF)*kernel[0]);
+    multvalue += ((frame.pixel(  x,y-1)&0xFF)*kernel[1]);
+    multvalue += ((frame.pixel(x-1,  y)&0xFF)*kernel[3]);
+    multvalue += ((frame.pixel(  x,  y)&0xFF)*kernel[4]);
+    color = multvalue;
+    filtered.setPixel(x, y, (0xFF<<24) | (color<<16) | (color<<8) | (color));
+
+    //CORNERS x=0, y=height-1
+    x = 0;
+    y = limity;
+    multvalue = 0;
+    multvalue += ((frame.pixel(  x,y-1)&0xFF)*kernel[1]);
+    multvalue += ((frame.pixel(x+1,y-1)&0xFF)*kernel[2]);
+    multvalue += ((frame.pixel(  x,  y)&0xFF)*kernel[4]);
+    multvalue += ((frame.pixel(x+1,  y)&0xFF)*kernel[5]);
+    color = multvalue;
+    filtered.setPixel(x, y, (0xFF<<24) | (color<<16) | (color<<8) | (color));
+
+    //CORNERS x=width-1, y=0
+    x = limitx;
+    y = 0;
+    multvalue = 0;
+    multvalue += ((frame.pixel(x-1,  y)&0xFF)*kernel[3]);
+    multvalue += ((frame.pixel(  x,  y)&0xFF)*kernel[4]);
+    multvalue += ((frame.pixel(x-1,y+1)&0xFF)*kernel[6]);
+    multvalue += ((frame.pixel(  x,y+1)&0xFF)*kernel[7]);
+    color = multvalue;
+    filtered.setPixel(x, y, (0xFF<<24) | (color<<16) | (color<<8) | (color));
+
+    frame = filtered;
 }
 
 void WorkerImageProcessing::ProcessFrame(QImage frame){

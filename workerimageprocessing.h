@@ -17,7 +17,6 @@ private:
 
     void ThresholdImage(QImage &frame);
     void FilterImage(QImage &frame);
-    int MultIfValidPixel(QImage &frame, int x, int y, int &value);
 
 public:
     WorkerImageProcessing(QObject *parent = nullptr);
