@@ -28,6 +28,9 @@ void WorkerImageProcessing::FilterImage(QImage &frame){
     limity = frame.height()-1;
     limitx = frame.width()-1;
 
+    // Implemented in separate parts so that the
+    // algorithm does not need to check valid pixels
+
     // MIDDLE OF IMAGE
     for(y=1; y<limity ;y++){
         for(x=1; x<limitx ;x++){
