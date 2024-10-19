@@ -40,6 +40,9 @@ bool MainWindow::Init(){
 
     emit VideoPlayerInit();
 
+    _ui->spinScale->setValue(800);
+    _ui->spinSaturation->setValue(230);
+
     return true;
 }
 
@@ -107,9 +110,12 @@ bool MainWindow::StartThreadVideo(){
     connect(this, &MainWindow::VideoPause, worker, &WorkerVideo::Pause);
     connect(this, &MainWindow::VideoStop, worker, &WorkerVideo::Stop);
 
+    connect(_ui->spinScale, &QSpinBox::valueChanged, worker, &WorkerVideo::SetScale);
+    connect(_ui->spinSaturation, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetSaturation);
+
     worker->moveToThread(_threadVideo);
     workerImage->moveToThread(_threadImageProcessing);
-    _threadImageProcessing->start();
+    _threadImageProcessing->start(QThread::HighestPriority);
     _threadVideo->start();
 
     return true;

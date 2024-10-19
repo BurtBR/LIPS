@@ -100,7 +100,7 @@ QProgressBar::chunk{
              <number>255</number>
             </property>
             <property name="value">
-             <number>230</number>
+             <number>1</number>
             </property>
            </widget>
           </item>
@@ -120,7 +120,7 @@ QProgressBar::chunk{
              <number>4000</number>
             </property>
             <property name="value">
-             <number>800</number>
+             <number>10</number>
             </property>
            </widget>
           </item>

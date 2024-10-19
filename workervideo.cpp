@@ -60,10 +60,15 @@ void WorkerVideo::SetFilename(QString filename){
     emit ErrorMessage("WorkerVideo: File loaded " + filename);
 }
 
+void WorkerVideo::SetScale(int scale){
+    if(scale > 10)
+        _scalewidth = scale;
+}
+
 void WorkerVideo::ProcessFrame(QVideoFrame frame){
     if(!frame.isValid())
         return;
-    emit FrameReady(frame.toImage());
+    emit FrameReady(frame.toImage().scaled(_scalewidth,_scalewidth,Qt::KeepAspectRatio));
 }
 
 void WorkerVideo::MediaStatusChanged(QMediaPlayer::MediaStatus status){

@@ -12,6 +12,7 @@ class WorkerVideo : public QObject{
 private:
     QMediaPlayer *_player = nullptr;
     qint64  _mediasize = 0;
+    uint32_t _scalewidth = 500;
 
 public:
     WorkerVideo(QObject *parent = nullptr);
@@ -26,6 +27,7 @@ private slots:
 public slots:
     void Init();
     void SetFilename(QString filename);
+    void SetScale(int scale);
     void Play();
     void Stop();
     void Pause();
