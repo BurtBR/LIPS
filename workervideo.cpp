@@ -56,6 +56,7 @@ void WorkerVideo::SetFilename(QString filename){
         return;
     }
 
+    emit EndOfMedia();
     emit PlayerSetSource(QUrl(filename));
     emit ErrorMessage("WorkerVideo: File loaded " + filename);
     _first = true;
@@ -67,6 +68,10 @@ void WorkerVideo::SetScale(int scale){
         _scalewidth = scale;
 }
 
+void WorkerVideo::SetGrayscale(bool value){
+    _gray = value;
+}
+
 void WorkerVideo::ProcessFrame(QVideoFrame frame){
     if(!frame.isValid())
         return;
@@ -76,7 +81,10 @@ void WorkerVideo::ProcessFrame(QVideoFrame frame){
         emit PlayerStop();
     }
 
-    emit FrameReady(frame.toImage().scaled(_scalewidth,_scalewidth,Qt::KeepAspectRatio).convertToFormat(QImage::Format_Grayscale8));
+    if(_gray)
+        emit FrameReady(frame.toImage().scaled(_scalewidth,_scalewidth,Qt::KeepAspectRatio).convertToFormat(QImage::Format_Grayscale8));
+    else
+        emit FrameReady(frame.toImage().scaled(_scalewidth,_scalewidth,Qt::KeepAspectRatio));
     emit FrameSent();
 }
 

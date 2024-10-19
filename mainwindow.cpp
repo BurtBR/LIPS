@@ -34,6 +34,9 @@ bool MainWindow::Init(){
     connect(_ui->buttonOpenFile, &QToolButton::clicked, this, &MainWindow::On_buttonOpenFile_clicked);
     connect(_ui->buttonPlay, &QToolButton::clicked, this, &MainWindow::On_buttonPlay_clicked);
     connect(_ui->buttonStop, &QToolButton::clicked, this, &MainWindow::On_buttonStop_clicked);
+    connect(_ui->checkSaturation, &QCheckBox::stateChanged, this, &MainWindow::On_checkSaturation_stateChanged);
+    connect(_ui->checkFilter, &QCheckBox::stateChanged, this, &MainWindow::On_checkFilter_stateChanged);
+    connect(_ui->checkPosition, &QCheckBox::stateChanged, this, &MainWindow::On_checkPositioning_stateChanged);
 
     if(!StartThreadVideo())
         return false;
@@ -110,6 +113,7 @@ bool MainWindow::StartThreadVideo(){
     connect(this, &MainWindow::VideoPlay, worker, &WorkerVideo::Play);
     connect(this, &MainWindow::VideoPause, worker, &WorkerVideo::Pause);
     connect(this, &MainWindow::VideoStop, worker, &WorkerVideo::Stop);
+    connect(this, &MainWindow::SetVideoGrayscale, worker, &WorkerVideo::SetGrayscale);
 
     connect(_ui->spinScale, &QSpinBox::valueChanged, worker, &WorkerVideo::SetScale);
     connect(_ui->spinSaturation, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetThreshold);
@@ -162,6 +166,30 @@ void MainWindow::VideoSentFrame(){
         }else if(_frameBalance > 10){
             ConsoleMessage("<font color=\"Red\">MainWindow: Unable to maintain sync with the video.");
         }
+    }
+}
+
+void MainWindow::On_checkSaturation_stateChanged(bool value){
+    emit SetVideoGrayscale(value);
+}
+
+void MainWindow::On_checkFilter_stateChanged(bool value){
+    if(value){
+        _ui->checkSaturation->setChecked(true);
+        _ui->checkSaturation->setDisabled(true);
+    }else{
+        _ui->checkSaturation->setDisabled(false);
+    }
+}
+
+void MainWindow::On_checkPositioning_stateChanged(bool value){
+    if(value){
+        _ui->checkSaturation->setChecked(true);
+        _ui->checkFilter->setChecked(true);
+        _ui->checkSaturation->setDisabled(true);
+        _ui->checkFilter->setDisabled(true);
+    }else{
+        _ui->checkFilter->setDisabled(false);
     }
 }
 

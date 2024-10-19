@@ -34,6 +34,9 @@ private slots:
     void VideoProgressChanged(int filled);
     void VideoEnded();
     void VideoSentFrame();
+    void On_checkSaturation_stateChanged(bool value);
+    void On_checkFilter_stateChanged(bool value);
+    void On_checkPositioning_stateChanged(bool value);
     void On_buttonOpenFile_clicked();
     void On_buttonPlay_clicked();
     void On_buttonStop_clicked();
@@ -44,5 +47,6 @@ signals:
     void VideoPlay();
     void VideoPause();
     void VideoStop();
+    void SetVideoGrayscale(bool);
 };
 #endif // MAINWINDOW_H

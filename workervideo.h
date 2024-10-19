@@ -13,7 +13,7 @@ private:
     QMediaPlayer *_player = nullptr;
     qint64  _mediasize = 0;
     uint32_t _scalewidth = 500;
-    bool _first = false;
+    bool _first = false, _gray = false;
 
 public:
     WorkerVideo(QObject *parent = nullptr);
@@ -29,6 +29,7 @@ public slots:
     void Init();
     void SetFilename(QString filename);
     void SetScale(int scale);
+    void SetGrayscale(bool value);
     void Play();
     void Stop();
     void Pause();
