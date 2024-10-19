@@ -45,6 +45,7 @@ void WorkerVideo::Init(){
     connect(_player, &QMediaPlayer::destroyed, sink, &QVideoSink::deleteLater);
     connect(_player, &QMediaPlayer::mediaStatusChanged, this, &WorkerVideo::MediaStatusChanged);
     connect(_player, &QMediaPlayer::metaDataChanged, this, &WorkerVideo::MediaMetadataChanged);
+    connect(_player, &QMediaPlayer::positionChanged, this, &WorkerVideo::MediaProgressChanged);
     connect(sink, &QVideoSink::videoFrameChanged, this, &WorkerVideo::ProcessFrame);
 }
 
@@ -73,8 +74,14 @@ void WorkerVideo::MediaStatusChanged(QMediaPlayer::MediaStatus status){
 }
 
 void WorkerVideo::MediaMetadataChanged(){
-    _currentFPS = _player->metaData().value(QMediaMetaData::VideoFrameRate).toFloat();
-    emit ErrorMessage("WorkerVideo: " + QString::number(_currentFPS) + " FPS");
+    float fps = _player->metaData().value(QMediaMetaData::VideoFrameRate).toFloat();
+    _mediasize = _player->duration();
+    emit ErrorMessage("WorkerVideo: " + QString::number(fps) + " FPS");
+    emit VideoFPSChanged(fps);
+}
+
+void WorkerVideo::MediaProgressChanged(qint64 ms){
+    emit ProgressChanged((ms*10000)/_mediasize);
 }
 
 void WorkerVideo::Play(){

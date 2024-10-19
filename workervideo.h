@@ -11,7 +11,7 @@ class WorkerVideo : public QObject{
 
 private:
     QMediaPlayer *_player = nullptr;
-    float _currentFPS = 0;
+    qint64  _mediasize = 0;
     bool _filter = false, _distortion = false, _saturation = false, _position = false;
 
 public:
@@ -22,6 +22,7 @@ private slots:
     void ProcessFrame(QVideoFrame frame);
     void MediaStatusChanged(QMediaPlayer::MediaStatus status);
     void MediaMetadataChanged();
+    void MediaProgressChanged(qint64 ms);
 
 public slots:
     void Init();
@@ -38,6 +39,8 @@ signals:
     void PlayerPause();
     void EndOfMedia();
     void PlayerSetSource(QUrl);
+    void ProgressChanged(int);
+    void VideoFPSChanged(float);
 };
 
 #endif // WORKERVIDEO_H

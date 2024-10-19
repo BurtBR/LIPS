@@ -59,6 +59,15 @@ QToolButton{
 	font: 12pt &quot;Source Code Pro&quot;;
 	color: white;
 	background-color: rgb(120, 120, 120);
+}
+
+QProgressBar{
+	background-color: rgb(120, 120, 120);
+}
+
+QProgressBar::chunk{
+	background-color: rgb(255, 53, 56);
+	border-radius: 10%;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -206,6 +215,37 @@ QToolButton{
             </property>
             <property name="alignment">
              <set>Qt::AlignmentFlag::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QProgressBar" name="progressBar">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>5</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>5</height>
+             </size>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="format">
+             <string/>
             </property>
            </widget>
           </item>

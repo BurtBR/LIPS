@@ -30,6 +30,7 @@ public:
 private slots:
     void ConsoleMessage(QString text);
     void FrameReady(QPixmap frame);
+    void VideoProgressChanged(int filled);
     void VideoEnded();
     void On_buttonOpenFile_clicked();
     void On_buttonPlay_clicked();

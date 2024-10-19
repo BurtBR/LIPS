@@ -67,6 +67,7 @@ bool MainWindow::StartThreadVideo(){
     connect(worker, &WorkerVideo::ErrorMessage, this, &MainWindow::ConsoleMessage);
     connect(worker, &WorkerVideo::EndOfMedia, this, &MainWindow::VideoEnded);
     connect(worker, &WorkerVideo::FrameReady, this, &MainWindow::FrameReady);
+    connect(worker, &WorkerVideo::ProgressChanged, this, &MainWindow::VideoProgressChanged);
     connect(this, &MainWindow::VideoPlayerInit, worker, &WorkerVideo::Init);
     connect(this, &MainWindow::VideoSetFileName, worker, &WorkerVideo::SetFilename);
     connect(this, &MainWindow::VideoPlay, worker, &WorkerVideo::Play);
@@ -88,6 +89,10 @@ void MainWindow::FrameReady(QPixmap frame){
     int h = _ui->labelImage->height()-10;
 
     _ui->labelImage->setPixmap(frame.scaled(w, h, Qt::KeepAspectRatio));
+}
+
+void MainWindow::VideoProgressChanged(int filled){
+    _ui->progressBar->setValue(filled);
 }
 
 void MainWindow::VideoEnded(){
