@@ -40,6 +40,28 @@ private slots:
     void On_buttonOpenFile_clicked();
     void On_buttonPlay_clicked();
     void On_buttonStop_clicked();
+    void On_buttonInsertAnchor_clicked();
+    void On_buttonRemoveAnchor_clicked();
+    void On_buttonSaveAnchor_clicked();
+    void On_buttonSaveAsAnchor_clicked();
+    void On_buttonOpenAnchor_clicked();
+    void On_lineFx_EditingFinished();
+    void On_lineFy_EditingFinished();
+    void On_lineCx_EditingFinished();
+    void On_lineCy_EditingFinished();
+    void On_lineK1_EditingFinished();
+    void On_lineK2_EditingFinished();
+    void On_lineP1_EditingFinished();
+    void On_lineP2_EditingFinished();
+    void On_lineR11_EditingFinished();
+    void On_lineR12_EditingFinished();
+    void On_lineR13_EditingFinished();
+    void On_lineR21_EditingFinished();
+    void On_lineR22_EditingFinished();
+    void On_lineR23_EditingFinished();
+    void On_lineR31_EditingFinished();
+    void On_lineR32_EditingFinished();
+    void On_lineR33_EditingFinished();
 
 signals:
     void VideoPlayerInit();

@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include <QFileDialog>
 #include <QDateTime>
+#include <QDoubleValidator>
 #include "workervideo.h"
 #include "workerimageprocessing.h"
 
@@ -31,17 +32,65 @@ void MainWindow::DeleteThread(QThread **threadptr){
 
 bool MainWindow::Init(){
 
+    if(!StartThreadVideo())
+        return false;
+
+    emit VideoPlayerInit();
+
+    try{
+        _ui->lineCx->setValidator(new QDoubleValidator(_ui->lineCx));
+        _ui->lineCy->setValidator(new QDoubleValidator(_ui->lineCy));
+        _ui->lineFx->setValidator(new QDoubleValidator(_ui->lineFx));
+        _ui->lineFy->setValidator(new QDoubleValidator(_ui->lineFy));
+        _ui->lineK1->setValidator(new QDoubleValidator(_ui->lineK1));
+        _ui->lineK2->setValidator(new QDoubleValidator(_ui->lineK2));
+        _ui->lineP1->setValidator(new QDoubleValidator(_ui->lineP1));
+        _ui->lineP2->setValidator(new QDoubleValidator(_ui->lineP2));
+
+        _ui->lineR11->setValidator(new QDoubleValidator(_ui->lineR11));
+        _ui->lineR12->setValidator(new QDoubleValidator(_ui->lineR12));
+        _ui->lineR13->setValidator(new QDoubleValidator(_ui->lineR13));
+        _ui->lineR21->setValidator(new QDoubleValidator(_ui->lineR21));
+        _ui->lineR22->setValidator(new QDoubleValidator(_ui->lineR22));
+        _ui->lineR23->setValidator(new QDoubleValidator(_ui->lineR23));
+        _ui->lineR31->setValidator(new QDoubleValidator(_ui->lineR31));
+        _ui->lineR32->setValidator(new QDoubleValidator(_ui->lineR32));
+        _ui->lineR33->setValidator(new QDoubleValidator(_ui->lineR33));
+    }catch(...){
+        return false;
+    }
+
     connect(_ui->buttonOpenFile, &QToolButton::clicked, this, &MainWindow::On_buttonOpenFile_clicked);
     connect(_ui->buttonPlay, &QToolButton::clicked, this, &MainWindow::On_buttonPlay_clicked);
     connect(_ui->buttonStop, &QToolButton::clicked, this, &MainWindow::On_buttonStop_clicked);
     connect(_ui->checkSaturation, &QCheckBox::stateChanged, this, &MainWindow::On_checkSaturation_stateChanged);
     connect(_ui->checkFilter, &QCheckBox::stateChanged, this, &MainWindow::On_checkFilter_stateChanged);
     connect(_ui->checkPosition, &QCheckBox::stateChanged, this, &MainWindow::On_checkPositioning_stateChanged);
+    connect(_ui->buttonInsertAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonInsertAnchor_clicked);
+    connect(_ui->buttonRemoveAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonRemoveAnchor_clicked);
+    connect(_ui->buttonSaveAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonSaveAnchor_clicked);
+    connect(_ui->buttonSaveAsAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonSaveAsAnchor_clicked);
+    connect(_ui->buttonOpenAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonOpenAnchor_clicked);
+    connect(_ui->lineFx, &QLineEdit::editingFinished, this, &MainWindow::On_lineFx_EditingFinished);
+    connect(_ui->lineFy, &QLineEdit::editingFinished, this, &MainWindow::On_lineFy_EditingFinished);
+    connect(_ui->lineCx, &QLineEdit::editingFinished, this, &MainWindow::On_lineCx_EditingFinished);
+    connect(_ui->lineCy, &QLineEdit::editingFinished, this, &MainWindow::On_lineCy_EditingFinished);
+    connect(_ui->lineK1, &QLineEdit::editingFinished, this, &MainWindow::On_lineK1_EditingFinished);
+    connect(_ui->lineK2, &QLineEdit::editingFinished, this, &MainWindow::On_lineK2_EditingFinished);
+    connect(_ui->lineP1, &QLineEdit::editingFinished, this, &MainWindow::On_lineP1_EditingFinished);
+    connect(_ui->lineP2, &QLineEdit::editingFinished, this, &MainWindow::On_lineP2_EditingFinished);
+    connect(_ui->lineR11, &QLineEdit::editingFinished, this, &MainWindow::On_lineR11_EditingFinished);
+    connect(_ui->lineR12, &QLineEdit::editingFinished, this, &MainWindow::On_lineR12_EditingFinished);
+    connect(_ui->lineR13, &QLineEdit::editingFinished, this, &MainWindow::On_lineR13_EditingFinished);
+    connect(_ui->lineR21, &QLineEdit::editingFinished, this, &MainWindow::On_lineR21_EditingFinished);
+    connect(_ui->lineR22, &QLineEdit::editingFinished, this, &MainWindow::On_lineR22_EditingFinished);
+    connect(_ui->lineR23, &QLineEdit::editingFinished, this, &MainWindow::On_lineR23_EditingFinished);
+    connect(_ui->lineR31, &QLineEdit::editingFinished, this, &MainWindow::On_lineR31_EditingFinished);
+    connect(_ui->lineR32, &QLineEdit::editingFinished, this, &MainWindow::On_lineR32_EditingFinished);
+    connect(_ui->lineR33, &QLineEdit::editingFinished, this, &MainWindow::On_lineR33_EditingFinished);
 
-    if(!StartThreadVideo())
-        return false;
-
-    emit VideoPlayerInit();
+    _ui->tableAnchors->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    _ui->tableAnchors->setHorizontalHeaderLabels({"Anchor Code", "Position X", "Position Y", "Position Z"});
 
     _ui->spinScale->setValue(700);
     _ui->spinSaturation->setValue(230);
@@ -219,4 +268,92 @@ void MainWindow::On_buttonStop_clicked(){
     emit VideoStop();
     _ui->buttonPlay->setIcon(QIcon(":/Figures/Play.png"));
     _isPlaying = false;
+}
+
+void MainWindow::On_buttonInsertAnchor_clicked(){
+    _ui->tableAnchors->insertRow(0);
+}
+
+void MainWindow::On_buttonRemoveAnchor_clicked(){
+
+}
+
+void MainWindow::On_buttonSaveAnchor_clicked(){
+
+}
+
+void MainWindow::On_buttonSaveAsAnchor_clicked(){
+
+}
+
+void MainWindow::On_buttonOpenAnchor_clicked(){
+
+}
+
+void MainWindow::On_lineFx_EditingFinished(){
+
+}
+
+void MainWindow::On_lineFy_EditingFinished(){
+
+}
+
+void MainWindow::On_lineCx_EditingFinished(){
+
+}
+
+void MainWindow::On_lineCy_EditingFinished(){
+
+}
+
+void MainWindow::On_lineK1_EditingFinished(){
+
+}
+
+void MainWindow::On_lineK2_EditingFinished(){
+
+}
+
+void MainWindow::On_lineP1_EditingFinished(){
+
+}
+
+void MainWindow::On_lineP2_EditingFinished(){
+
+}
+
+void MainWindow::On_lineR11_EditingFinished(){
+
+}
+
+void MainWindow::On_lineR12_EditingFinished(){
+
+}
+
+void MainWindow::On_lineR13_EditingFinished(){
+
+}
+
+void MainWindow::On_lineR21_EditingFinished(){
+
+}
+
+void MainWindow::On_lineR22_EditingFinished(){
+
+}
+
+void MainWindow::On_lineR23_EditingFinished(){
+
+}
+
+void MainWindow::On_lineR31_EditingFinished(){
+
+}
+
+void MainWindow::On_lineR32_EditingFinished(){
+
+}
+
+void MainWindow::On_lineR33_EditingFinished(){
+
 }
