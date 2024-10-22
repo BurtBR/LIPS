@@ -228,12 +228,21 @@ void WorkerImageProcessing::RecursiveGroup(QImage &frame, uint32_t x, uint32_t y
 }
 
 QRgb WorkerImageProcessing::MapDistortion(QImage &distorted, double x, double y){
-    double rpart1 = ((x-_cx)/_fx), rpart2 = ((y-_cy)/_fy);
+
+    double widthratio = ((double)distorted.width())/_originalwidth;
+    double heightratio = ((double)distorted.height())/_originalheight;
+
+    double cx = _cx*widthratio;
+    double cy = _cy*heightratio;
+    double fx = _fx*widthratio;
+    double fy = _fy*widthratio;
+
+    double rpart1 = ((x-cx)/fx), rpart2 = ((y-cy)/fy);
     double r2 = (rpart1*rpart1) + (rpart2*rpart2);
     double radial = (((double)1.0) + _k1*r2 + _k2*r2*r2);
 
-    double newx = qRound( (radial*(x-_cx))+_cx );
-    double newy = qRound( (radial*(y-_cy))+_cy );
+    double newx = qRound( (radial*(x-cx))+cx );
+    double newy = qRound( (radial*(y-cy))+cy );
 
     if(newx>=0 && newy>=0 && newx<distorted.width() && newy<distorted.height())
         return distorted.pixel(newx, newy);
@@ -242,6 +251,11 @@ QRgb WorkerImageProcessing::MapDistortion(QImage &distorted, double x, double y)
 }
 
 void WorkerImageProcessing::ProcessFrame(QImage frame){
+
+    _originalwidth = frame.width();
+    _originalheight = frame.height();
+
+    frame = frame.scaledToWidth(_scalewidth);
 
     if(_distortion){
         QImage frameaux = frame.convertToFormat(QImage::Format_RGB32);
@@ -252,7 +266,7 @@ void WorkerImageProcessing::ProcessFrame(QImage frame){
         }
     }
 
-    frame = frame.scaledToWidth(_scalewidth);
+    //frame = frame.scaledToWidth(_scalewidth);
 
     if(_positioning){
         QImage frameaux = frame.convertToFormat(QImage::Format_ARGB32);
@@ -287,8 +301,9 @@ void WorkerImageProcessing::SetThreshold(int value){
 }
 
 void WorkerImageProcessing::SetScaleWidth(int value){
-    if(value > 0)
+    if(value > 0){
         _scalewidth = value;
+    }
 }
 
 void WorkerImageProcessing::SetMinRadius(int value){
