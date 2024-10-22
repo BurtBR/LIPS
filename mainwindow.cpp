@@ -165,6 +165,14 @@ bool MainWindow::StartThreadVideo(){
     connect(this, &MainWindow::VideoPause, worker, &WorkerVideo::Pause);
     connect(this, &MainWindow::VideoStop, worker, &WorkerVideo::Stop);
     connect(this, &MainWindow::SetVideoGrayscale, worker, &WorkerVideo::SetGrayscale);
+    connect(this, &MainWindow::SetFx, workerImage, &WorkerImageProcessing::SetFx);
+    connect(this, &MainWindow::SetFy, workerImage, &WorkerImageProcessing::SetFy);
+    connect(this, &MainWindow::SetCx, workerImage, &WorkerImageProcessing::SetCx);
+    connect(this, &MainWindow::SetCy, workerImage, &WorkerImageProcessing::SetCy);
+    connect(this, &MainWindow::SetK1, workerImage, &WorkerImageProcessing::SetK1);
+    connect(this, &MainWindow::SetK2, workerImage, &WorkerImageProcessing::SetK2);
+    connect(this, &MainWindow::SetP1, workerImage, &WorkerImageProcessing::SetP1);
+    connect(this, &MainWindow::SetP2, workerImage, &WorkerImageProcessing::SetP2);
 
     connect(_ui->spinScale, &QSpinBox::valueChanged, worker, &WorkerVideo::SetScale);
     connect(_ui->spinSaturation, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetThreshold);
@@ -291,35 +299,35 @@ void MainWindow::On_buttonOpenAnchor_clicked(){
 }
 
 void MainWindow::On_lineFx_EditingFinished(){
-
+    emit SetFx(_ui->lineFx->text().toDouble());
 }
 
 void MainWindow::On_lineFy_EditingFinished(){
-
+    emit SetFy(_ui->lineFy->text().toDouble());
 }
 
 void MainWindow::On_lineCx_EditingFinished(){
-
+    emit SetCx(_ui->lineCx->text().toDouble());
 }
 
 void MainWindow::On_lineCy_EditingFinished(){
-
+    emit SetCy(_ui->lineCy->text().toDouble());
 }
 
 void MainWindow::On_lineK1_EditingFinished(){
-
+    emit SetK1(_ui->lineK1->text().toDouble());
 }
 
 void MainWindow::On_lineK2_EditingFinished(){
-
+    emit SetK2(_ui->lineK2->text().toDouble());
 }
 
 void MainWindow::On_lineP1_EditingFinished(){
-
+    emit SetP1(_ui->lineP1->text().toDouble());
 }
 
 void MainWindow::On_lineP2_EditingFinished(){
-
+    emit SetP2(_ui->lineP2->text().toDouble());
 }
 
 void MainWindow::On_lineR11_EditingFinished(){

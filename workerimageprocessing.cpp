@@ -227,7 +227,30 @@ void WorkerImageProcessing::RecursiveGroup(QImage &frame, uint32_t x, uint32_t y
         anchor.setRight(x);
 }
 
+QRgb WorkerImageProcessing::MapDistortion(QImage &distorted, double x, double y){
+    double rpart1 = ((x-_cx)/_fx), rpart2 = ((y-_cy)/_fy);
+    double r2 = (rpart1*rpart1) + (rpart2*rpart2);
+    double radial = (((double)1.0) + _k1*r2 + _k2*r2*r2);
+
+    double newx = qRound( (radial*(x-_cx))+_cx );
+    double newy = qRound( (radial*(y-_cy))+_cy );
+
+    if(newx>=0 && newy>=0 && newx<distorted.width() && newy<distorted.height())
+        return distorted.pixel(newx, newy);
+
+    return 0xFF000000;
+}
+
 void WorkerImageProcessing::ProcessFrame(QImage frame){
+
+    if(_distortion){
+        QImage frameaux = frame.convertToFormat(QImage::Format_ARGB32);
+        for(int y=0; y<frame.height() ;y++){
+            for(int x=0; x<frame.width() ;x++){
+                frame.setPixel(x, y, MapDistortion(frameaux, x, y));
+            }
+        }
+    }
 
     if(_positioning){
         QImage frameaux = frame.convertToFormat(QImage::Format_ARGB32);
@@ -273,6 +296,38 @@ void WorkerImageProcessing::SetMinRadius(int value){
 void WorkerImageProcessing::SetMaxRadius(int value){
     if(value > 0)
         _maxradius = value;
+}
+
+void WorkerImageProcessing::SetFx(double value){
+    _fx = value;
+}
+
+void WorkerImageProcessing::SetFy(double value){
+    _fy = value;
+}
+
+void WorkerImageProcessing::SetCx(double value){
+    _cx = value;
+}
+
+void WorkerImageProcessing::SetCy(double value){
+    _cy = value;
+}
+
+void WorkerImageProcessing::SetK1(double value){
+    _k1 = value;
+}
+
+void WorkerImageProcessing::SetK2(double value){
+    _k2 = value;
+}
+
+void WorkerImageProcessing::SetP1(double value){
+    _p1 = value;
+}
+
+void WorkerImageProcessing::SetP2(double value){
+    _p2 = value;
 }
 
 void WorkerImageProcessing::SetSaturationOn(bool condition){
