@@ -244,13 +244,15 @@ QRgb WorkerImageProcessing::MapDistortion(QImage &distorted, double x, double y)
 void WorkerImageProcessing::ProcessFrame(QImage frame){
 
     if(_distortion){
-        QImage frameaux = frame.convertToFormat(QImage::Format_ARGB32);
+        QImage frameaux = frame.convertToFormat(QImage::Format_RGB32);
         for(int y=0; y<frame.height() ;y++){
             for(int x=0; x<frame.width() ;x++){
                 frame.setPixel(x, y, MapDistortion(frameaux, x, y));
             }
         }
     }
+
+    frame = frame.scaledToWidth(_scalewidth);
 
     if(_positioning){
         QImage frameaux = frame.convertToFormat(QImage::Format_ARGB32);
@@ -279,13 +281,14 @@ void WorkerImageProcessing::ProcessFrame(QImage frame){
     }
 }
 
-void WorkerImageProcessing::SetFPS(float fps){
-    _fps = fps;
-}
-
 void WorkerImageProcessing::SetThreshold(int value){
     if(value > 0 && value < 255)
         _threshold = value;
+}
+
+void WorkerImageProcessing::SetScaleWidth(int value){
+    if(value > 0)
+        _scalewidth = value;
 }
 
 void WorkerImageProcessing::SetMinRadius(int value){

@@ -82,9 +82,9 @@ void WorkerVideo::ProcessFrame(QVideoFrame frame){
     }
 
     if(_gray)
-        emit FrameReady(frame.toImage().scaled(_scalewidth,_scalewidth,Qt::KeepAspectRatio).convertToFormat(QImage::Format_Grayscale8));
+        emit FrameReady(frame.toImage().convertToFormat(QImage::Format_Grayscale8));
     else
-        emit FrameReady(frame.toImage().scaled(_scalewidth,_scalewidth,Qt::KeepAspectRatio));
+        emit FrameReady(frame.toImage());
     emit FrameSent();
 }
 

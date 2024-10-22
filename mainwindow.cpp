@@ -157,7 +157,6 @@ bool MainWindow::StartThreadVideo(){
     connect(workerImage, &WorkerImageProcessing::FrameReady, this, &MainWindow::FrameReady);
 
     connect(worker, &WorkerVideo::FrameReady, workerImage, &WorkerImageProcessing::ProcessFrame);
-    connect(worker, &WorkerVideo::VideoFPSChanged, workerImage, &WorkerImageProcessing::SetFPS);
 
     connect(this, &MainWindow::VideoPlayerInit, worker, &WorkerVideo::Init);
     connect(this, &MainWindow::VideoSetFileName, worker, &WorkerVideo::SetFilename);
@@ -174,7 +173,7 @@ bool MainWindow::StartThreadVideo(){
     connect(this, &MainWindow::SetP1, workerImage, &WorkerImageProcessing::SetP1);
     connect(this, &MainWindow::SetP2, workerImage, &WorkerImageProcessing::SetP2);
 
-    connect(_ui->spinScale, &QSpinBox::valueChanged, worker, &WorkerVideo::SetScale);
+    connect(_ui->spinScale, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetScaleWidth);
     connect(_ui->spinSaturation, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetThreshold);
     connect(_ui->spinMinRadius, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetMinRadius);
     connect(_ui->spinMaxRadius, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetMaxRadius);
