@@ -70,13 +70,13 @@ signals:
     void VideoPause();
     void VideoStop();
     void SetVideoGrayscale(bool);
-    void SetFx(double);
-    void SetFy(double);
-    void SetCx(double);
-    void SetCy(double);
-    void SetK1(double);
-    void SetK2(double);
-    void SetP1(double);
-    void SetP2(double);
+    void SetFx(float);
+    void SetFy(float);
+    void SetCx(float);
+    void SetCy(float);
+    void SetK1(float);
+    void SetK2(float);
+    void SetP1(float);
+    void SetP2(float);
 };
 #endif // MAINWINDOW_H

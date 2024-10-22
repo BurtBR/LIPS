@@ -155,6 +155,7 @@ bool MainWindow::StartThreadVideo(){
     connect(worker, &WorkerVideo::FrameSent, this, &MainWindow::VideoSentFrame);
 
     connect(workerImage, &WorkerImageProcessing::FrameReady, this, &MainWindow::FrameReady);
+    connect(workerImage, &WorkerImageProcessing::Message, this, &MainWindow::ConsoleMessage);
 
     connect(worker, &WorkerVideo::FrameReady, workerImage, &WorkerImageProcessing::ProcessFrame);
 
@@ -298,35 +299,35 @@ void MainWindow::On_buttonOpenAnchor_clicked(){
 }
 
 void MainWindow::On_lineFx_EditingFinished(){
-    emit SetFx(_ui->lineFx->text().toDouble());
+    emit SetFx(_ui->lineFx->text().toFloat());
 }
 
 void MainWindow::On_lineFy_EditingFinished(){
-    emit SetFy(_ui->lineFy->text().toDouble());
+    emit SetFy(_ui->lineFy->text().toFloat());
 }
 
 void MainWindow::On_lineCx_EditingFinished(){
-    emit SetCx(_ui->lineCx->text().toDouble());
+    emit SetCx(_ui->lineCx->text().toFloat());
 }
 
 void MainWindow::On_lineCy_EditingFinished(){
-    emit SetCy(_ui->lineCy->text().toDouble());
+    emit SetCy(_ui->lineCy->text().toFloat());
 }
 
 void MainWindow::On_lineK1_EditingFinished(){
-    emit SetK1(_ui->lineK1->text().toDouble());
+    emit SetK1(_ui->lineK1->text().toFloat());
 }
 
 void MainWindow::On_lineK2_EditingFinished(){
-    emit SetK2(_ui->lineK2->text().toDouble());
+    emit SetK2(_ui->lineK2->text().toFloat());
 }
 
 void MainWindow::On_lineP1_EditingFinished(){
-    emit SetP1(_ui->lineP1->text().toDouble());
+    emit SetP1(_ui->lineP1->text().toFloat());
 }
 
 void MainWindow::On_lineP2_EditingFinished(){
-    emit SetP2(_ui->lineP2->text().toDouble());
+    emit SetP2(_ui->lineP2->text().toFloat());
 }
 
 void MainWindow::On_lineR11_EditingFinished(){

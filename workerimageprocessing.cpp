@@ -227,22 +227,22 @@ void WorkerImageProcessing::RecursiveGroup(QImage &frame, uint32_t x, uint32_t y
         anchor.setRight(x);
 }
 
-QRgb WorkerImageProcessing::MapDistortion(QImage &distorted, double x, double y){
+QRgb WorkerImageProcessing::MapDistortion(QImage &distorted, float x, float y){
 
-    double widthratio = ((double)distorted.width())/_originalwidth;
-    double heightratio = ((double)distorted.height())/_originalheight;
+    float widthratio = ((float)distorted.width())/_originalwidth;
+    float heightratio = ((float)distorted.height())/_originalheight;
 
-    double cx = _cx*widthratio;
-    double cy = _cy*heightratio;
-    double fx = _fx*widthratio;
-    double fy = _fy*widthratio;
+    float cx = _cx*widthratio;
+    float cy = _cy*heightratio;
+    float fx = _fx*widthratio;
+    float fy = _fy*widthratio;
 
-    double rpart1 = ((x-cx)/fx), rpart2 = ((y-cy)/fy);
-    double r2 = (rpart1*rpart1) + (rpart2*rpart2);
-    double radial = (((double)1.0) + _k1*r2 + _k2*r2*r2);
+    float rpart1 = ((x-cx)/fx), rpart2 = ((y-cy)/fy);
+    float r2 = (rpart1*rpart1) + (rpart2*rpart2);
+    float radial = (((float)1.0) + _k1*r2 + _k2*r2*r2);
 
-    double newx = qRound( (radial*(x-cx))+cx );
-    double newy = qRound( (radial*(y-cy))+cy );
+    float newx = qRound( (radial*(x-cx))+cx );
+    float newy = qRound( (radial*(y-cy))+cy );
 
     if(newx>=0 && newy>=0 && newx<distorted.width() && newy<distorted.height())
         return distorted.pixel(newx, newy);
@@ -265,8 +265,6 @@ void WorkerImageProcessing::ProcessFrame(QImage frame){
             }
         }
     }
-
-    //frame = frame.scaledToWidth(_scalewidth);
 
     if(_positioning){
         QImage frameaux = frame.convertToFormat(QImage::Format_ARGB32);
@@ -296,70 +294,101 @@ void WorkerImageProcessing::ProcessFrame(QImage frame){
 }
 
 void WorkerImageProcessing::SetThreshold(int value){
-    if(value > 0 && value < 255)
+    if(value > 0 && value < 255){
         _threshold = value;
+        emit Message("ImageProcessing: Threshold Set " + QString::number(value));
+    }
 }
 
 void WorkerImageProcessing::SetScaleWidth(int value){
     if(value > 0){
         _scalewidth = value;
+        emit Message("ImageProcessing: ScaleWidth Set " + QString::number(value));
     }
 }
 
 void WorkerImageProcessing::SetMinRadius(int value){
-    if(value >= 0)
+    if(value >= 0){
         _minradius = value;
+        emit Message("ImageProcessing: MinRadius Set " + QString::number(value));
+    }
 }
 
 void WorkerImageProcessing::SetMaxRadius(int value){
-    if(value > 0)
+    if(value > 0){
         _maxradius = value;
+        emit Message("ImageProcessing: MaxRaius Set " + QString::number(value));
+    }
 }
 
-void WorkerImageProcessing::SetFx(double value){
+void WorkerImageProcessing::SetFx(float value){
     _fx = value;
+    emit Message("ImageProcessing: Fx Set " + QString::number(value));
 }
 
-void WorkerImageProcessing::SetFy(double value){
+void WorkerImageProcessing::SetFy(float value){
     _fy = value;
+    emit Message("ImageProcessing: Fy Set " + QString::number(value));
 }
 
-void WorkerImageProcessing::SetCx(double value){
+void WorkerImageProcessing::SetCx(float value){
     _cx = value;
+    emit Message("ImageProcessing: Cx Set " + QString::number(value));
 }
 
-void WorkerImageProcessing::SetCy(double value){
+void WorkerImageProcessing::SetCy(float value){
     _cy = value;
+    emit Message("ImageProcessing: Cy Set " + QString::number(value));
 }
 
-void WorkerImageProcessing::SetK1(double value){
+void WorkerImageProcessing::SetK1(float value){
     _k1 = value;
+    emit Message("ImageProcessing: K1 Set " + QString::number(value));
 }
 
-void WorkerImageProcessing::SetK2(double value){
+void WorkerImageProcessing::SetK2(float value){
     _k2 = value;
+    emit Message("ImageProcessing: K2 Set " + QString::number(value));
 }
 
-void WorkerImageProcessing::SetP1(double value){
+void WorkerImageProcessing::SetP1(float value){
     _p1 = value;
+    emit Message("ImageProcessing: P1 Set " + QString::number(value));
 }
 
-void WorkerImageProcessing::SetP2(double value){
+void WorkerImageProcessing::SetP2(float value){
     _p2 = value;
+    emit Message("ImageProcessing: P2 Set " + QString::number(value));
 }
 
 void WorkerImageProcessing::SetSaturationOn(bool condition){
     _saturation = condition;
+    if(_saturation)
+        emit Message("ImageProcessing: Saturation ON");
+    else
+        emit Message("ImageProcessing: Saturation OFF");
 }
 
 void WorkerImageProcessing::SetFilterOn(bool condition){
     _filter = condition;
+    if(_filter)
+        emit Message("ImageProcessing: Filtering ON");
+    else
+        emit Message("ImageProcessing: Filtering OFF");
 }
 
 void WorkerImageProcessing::SetDistortionOn(bool condition){
     _distortion = condition;
+    if(_distortion)
+        emit Message("ImageProcessing: Disrtortion ON");
+    else
+        emit Message("ImageProcessing: Disrtortion OFF");
 }
 
 void WorkerImageProcessing::SetPositionOn(bool condition){
     _positioning = condition;
+    if(_positioning)
+        emit Message("ImageProcessing: Positioning ON");
+    else
+        emit Message("ImageProcessing: Positioning OFF");
 }
