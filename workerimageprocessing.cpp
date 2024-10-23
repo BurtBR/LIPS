@@ -229,13 +229,10 @@ void WorkerImageProcessing::RecursiveGroup(QImage &frame, uint32_t x, uint32_t y
 
 QRgb WorkerImageProcessing::MapDistortion(QImage &distorted, float x, float y){
 
-    float widthratio = ((float)distorted.width())/_originalwidth;
-    float heightratio = ((float)distorted.height())/_originalheight;
-
-    float cx = _cx*widthratio;
-    float cy = _cy*heightratio;
-    float fx = _fx*widthratio;
-    float fy = _fy*widthratio;
+    float cx = _cx*_scaleratio;
+    float cy = _cy*_scaleratio;
+    float fx = _fx*_scaleratio;
+    float fy = _fy*_scaleratio;
 
     float rpart1 = ((x-cx)/fx), rpart2 = ((y-cy)/fy);
     float r2 = (rpart1*rpart1) + (rpart2*rpart2);
@@ -252,8 +249,7 @@ QRgb WorkerImageProcessing::MapDistortion(QImage &distorted, float x, float y){
 
 void WorkerImageProcessing::ProcessFrame(QImage frame){
 
-    _originalwidth = frame.width();
-    _originalheight = frame.height();
+    _scaleratio = ( ((float)_scalewidth)/((float)frame.width()) );
 
     frame = frame.scaledToWidth(_scalewidth);
 
