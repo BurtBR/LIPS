@@ -219,7 +219,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(line.compare("Fx;Fy") != 0){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (Fx,Fy)");
         return;
     }
 
@@ -228,7 +228,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(strlist.size()!= 2){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (Fx,Fy)");
         return;
     }
 
@@ -239,7 +239,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(line.compare("Cx;Cy") != 0){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (Cx,Cy)");
         return;
     }
 
@@ -248,7 +248,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(strlist.size()!= 2){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (Cx,Cy)");
         return;
     }
 
@@ -259,7 +259,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(line.compare("K1;K2") != 0){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (K1,K2)");
         return;
     }
 
@@ -268,7 +268,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(strlist.size()!= 2){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (K1,K2)");
         return;
     }
 
@@ -279,7 +279,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(line.compare("P1;P2") != 0){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (P1,P2)");
         return;
     }
 
@@ -288,7 +288,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(strlist.size()!= 2){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (P1,P2)");
         return;
     }
 
@@ -300,7 +300,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(strlist.size()!= 4){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (R)");
         return;
     }
 
@@ -309,7 +309,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
     rmatrix(0,2) = strlist[3].toFloat(&ok3);
     if(!ok1 || !ok2 || !ok3){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (R)");
         return;
     }
 
@@ -318,13 +318,13 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(strlist.size()!= 4){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (R)");
         return;
     }
 
     if(strlist[0].compare("R") != 0){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (R)");
         return;
     }
 
@@ -333,7 +333,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
     rmatrix(1,2) = strlist[3].toFloat(&ok3);
     if(!ok1 || !ok2 || !ok3){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (R)");
         return;
     }
 
@@ -342,7 +342,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     if(strlist.size()!= 4){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (R)");
         return;
     }
 
@@ -351,7 +351,7 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
     rmatrix(2,2) = strlist[3].toFloat(&ok3);
     if(!ok1 || !ok2 || !ok3){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (R)");
         return;
     }
 
@@ -360,14 +360,14 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
     line = in.readLine();
     if(line.compare("Anchors") != 0){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (Anchors)");
         return;
     }
 
     line = in.readLine();
     if(line.compare("Code;X;Y;Z") != 0){
         fp.close();
-        emit Message("WorkerFileHandler: Corrupted anchor file");
+        emit Message("WorkerFileHandler: Corrupted anchor file (Anchors)");
         return;
     }
 
@@ -376,13 +376,13 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
         strlist = line.split(';');
         if(strlist.size()!= 4){
             fp.close();
-            emit Message("WorkerFileHandler: Corrupted anchor file");
+            emit Message("WorkerFileHandler: Corrupted anchor file (Anchors)");
             return;
         }
         emit AppendAnchor(strlist[0], strlist[1].toFloat(&ok1), strlist[2].toFloat(&ok2), strlist[3].toFloat(&ok3));
         if(!ok1 || !ok2 || !ok3){
             fp.close();
-            emit Message("WorkerFileHandler: Corrupted anchor file");
+            emit Message("WorkerFileHandler: Corrupted anchor file (Anchors)");
             return;
         }
     }
