@@ -11,9 +11,6 @@ private:
     static QFile *_defaultfile;
     const char *_defaultfilename = "defaulvalues.lips";
     QString _defaultanchorfile;
-    uint8_t _saturation;
-    uint32_t _scalewidth, _lasermin, _lasermax;
-    float _clockfreq;
 
     bool CreateDefaultFile();
 public:
@@ -22,6 +19,11 @@ public:
 
 public slots:
     void GetDefaultValues();
+    void SetSaturation(uint8_t value);
+    void SetScaleWidth(uint32_t value);
+    void SetLaserMax(uint32_t value);
+    void SetLaserMin(uint32_t value);
+    void SetClock(double value);
 
 signals:
     void Message(QString);

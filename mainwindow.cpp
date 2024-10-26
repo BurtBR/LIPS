@@ -219,9 +219,16 @@ bool MainWindow::StartThreadFileHandling(){
     }
 
     connect(_threadFileHandling, &QThread::finished, worker, &WorkerFileHandler::deleteLater);
+
     connect(worker, &WorkerFileHandler::Message, this, &MainWindow::ConsoleMessage);
     connect(worker, &WorkerFileHandler::SetDefaultValues, this, &MainWindow::SetDefaultValues);
+
     connect(this, &MainWindow::FileLoadDefault, worker, &WorkerFileHandler::GetDefaultValues);
+    connect(_ui->spinSaturation, &QSpinBox::valueChanged, worker, &WorkerFileHandler::SetSaturation);
+    connect(_ui->spinScale, &QSpinBox::valueChanged, worker, &WorkerFileHandler::SetScaleWidth);
+    connect(_ui->spinMaxRadius, &QSpinBox::valueChanged, worker, &WorkerFileHandler::SetLaserMax);
+    connect(_ui->spinMinRadius, &QSpinBox::valueChanged, worker, &WorkerFileHandler::SetLaserMin);
+    connect(_ui->spinClock, &QDoubleSpinBox::valueChanged, worker, &WorkerFileHandler::SetClock);
 
     worker->moveToThread(_threadFileHandling);
     _threadFileHandling->start();
