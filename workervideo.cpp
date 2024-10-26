@@ -51,14 +51,16 @@ void WorkerVideo::Init(){
 
 void WorkerVideo::SetFilename(QString filename){
 
-    if(!QFileInfo::exists(filename)){
+    QFileInfo fileinfo(filename);
+
+    if(!fileinfo.exists(filename)){
         emit ErrorMessage("<font color=\"Red\">WorkerVideo: File doesn't exists");
         return;
     }
 
     emit EndOfMedia();
     emit PlayerSetSource(QUrl(filename));
-    emit ErrorMessage("WorkerVideo: File loaded " + filename);
+    emit ErrorMessage("WorkerVideo: File loaded " + fileinfo.fileName());
     _first = true;
     emit PlayerPlay();
 }
