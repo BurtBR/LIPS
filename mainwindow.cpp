@@ -5,6 +5,7 @@
 #include <QDoubleValidator>
 #include "workervideo.h"
 #include "workerimageprocessing.h"
+#include "workerfilehandler.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
@@ -13,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
 MainWindow::~MainWindow(){
     DeleteThread(&_threadVideo);
     DeleteThread(&_threadImageProcessing);
+    DeleteThread(&_threadFileHandling);
     delete _ui;
 }
 
@@ -33,6 +35,9 @@ void MainWindow::DeleteThread(QThread **threadptr){
 bool MainWindow::Init(){
 
     if(!StartThreadVideo())
+        return false;
+
+    if(!StartThreadFileHandling())
         return false;
 
     emit VideoPlayerInit();
@@ -92,17 +97,18 @@ bool MainWindow::Init(){
     _ui->tableAnchors->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     _ui->tableAnchors->setHorizontalHeaderLabels({"Anchor Code", "Position X", "Position Y", "Position Z"});
 
-    _ui->spinScale->setValue(700);
-    _ui->spinSaturation->setValue(230);
-    _ui->spinMinRadius->setValue(5);
-    _ui->spinMaxRadius->setValue(20);
+    emit FileLoadDefault();
+    //_ui->spinScale->setValue(700);
+    //_ui->spinSaturation->setValue(230);
+    //_ui->spinMinRadius->setValue(5);
+    //_ui->spinMaxRadius->setValue(20);
 
     return true;
 }
 
 bool MainWindow::StartThreadVideo(){
 
-    if(_threadVideo)
+    if(_threadVideo || _threadImageProcessing)
         return false;
 
     WorkerVideo *worker= nullptr;
@@ -191,6 +197,38 @@ bool MainWindow::StartThreadVideo(){
     return true;
 }
 
+bool MainWindow::StartThreadFileHandling(){
+    if(_threadFileHandling)
+        return false;
+
+    WorkerFileHandler *worker;
+
+    try{
+        _threadFileHandling = new QThread;
+    }catch(...){
+        _threadFileHandling = nullptr;
+        return false;
+    }
+
+    try{
+        worker = new WorkerFileHandler;
+    }catch(...){
+        delete _threadFileHandling;
+        _threadFileHandling = nullptr;
+        return false;
+    }
+
+    connect(_threadFileHandling, &QThread::finished, worker, &WorkerFileHandler::deleteLater);
+    connect(worker, &WorkerFileHandler::Message, this, &MainWindow::ConsoleMessage);
+    connect(worker, &WorkerFileHandler::SetDefaultValues, this, &MainWindow::SetDefaultValues);
+    connect(this, &MainWindow::FileLoadDefault, worker, &WorkerFileHandler::GetDefaultValues);
+
+    worker->moveToThread(_threadFileHandling);
+    _threadFileHandling->start();
+
+    return true;
+}
+
 void MainWindow::ConsoleMessage(QString text){
     _ui->textConsole->append(QDateTime::currentDateTime().toString("[hh:mm:ss] ") + text);
 }
@@ -228,6 +266,17 @@ void MainWindow::VideoSentFrame(){
             ConsoleMessage("<font color=\"Red\">MainWindow: Unable to maintain sync with the video.");
         }
     }
+}
+
+void MainWindow::SetDefaultValues(uint8_t saturation, uint32_t scalewidth, uint32_t anchormin, uint32_t anchormax, float clock){
+
+    ConsoleMessage("MainWindow: Default values received");
+
+    _ui->spinSaturation->setValue(saturation);
+    _ui->spinScale->setValue(scalewidth);
+    _ui->spinMinRadius->setValue(anchormin);
+    _ui->spinMaxRadius->setValue(anchormax);
+    _ui->spinClock->setValue(clock);
 }
 
 void MainWindow::On_checkSaturation_stateChanged(bool value){

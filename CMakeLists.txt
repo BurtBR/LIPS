@@ -27,6 +27,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Icon.rc
         workervideo.h workervideo.cpp
         workerimageprocessing.h workerimageprocessing.cpp
+        workerfilehandler.h workerfilehandler.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LIPS APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

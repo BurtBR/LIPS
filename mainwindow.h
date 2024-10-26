@@ -15,12 +15,13 @@ class MainWindow : public QMainWindow{
 
 private:
     Ui::MainWindow *_ui;
-    QThread *_threadVideo = nullptr, *_threadImageProcessing;
+    QThread *_threadVideo = nullptr, *_threadImageProcessing = nullptr, *_threadFileHandling = nullptr;
     bool _isPlaying = false;
     int _frameBalance = 0;
 
     void DeleteThread(QThread **threadptr);
     bool StartThreadVideo();
+    bool StartThreadFileHandling();
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -34,6 +35,7 @@ private slots:
     void VideoProgressChanged(int filled);
     void VideoEnded();
     void VideoSentFrame();
+    void SetDefaultValues(uint8_t saturation, uint32_t scalewidth, uint32_t anchormin, uint32_t anchormax, float clock);
     void On_checkSaturation_stateChanged(bool value);
     void On_checkFilter_stateChanged(bool value);
     void On_checkPositioning_stateChanged(bool value);
@@ -78,5 +80,6 @@ signals:
     void SetK2(float);
     void SetP1(float);
     void SetP2(float);
+    void FileLoadDefault();
 };
 #endif // MAINWINDOW_H
