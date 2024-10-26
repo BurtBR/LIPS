@@ -15,6 +15,7 @@ MainWindow::~MainWindow(){
     DeleteThread(&_threadVideo);
     DeleteThread(&_threadImageProcessing);
     DeleteThread(&_threadFileHandling);
+    DeleteThread(&_threadPositioning);
     delete _ui;
 }
 
@@ -98,10 +99,6 @@ bool MainWindow::Init(){
     _ui->tableAnchors->setHorizontalHeaderLabels({"Anchor Code", "Position X", "Position Y", "Position Z"});
 
     emit FileLoadDefault();
-    //_ui->spinScale->setValue(700);
-    //_ui->spinSaturation->setValue(230);
-    //_ui->spinMinRadius->setValue(5);
-    //_ui->spinMaxRadius->setValue(20);
 
     return true;
 }

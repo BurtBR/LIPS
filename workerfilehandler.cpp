@@ -6,12 +6,20 @@
 volatile uint8_t* WorkerFileHandler::_defaultfile_map = nullptr;
 QFile* WorkerFileHandler::_defaultfile = nullptr;
 
-#define _MAP_SCALEWIDTH_VALUE (_defaultfile_map[0] << 24U | _defaultfile_map[1] << 16U | _defaultfile_map[2] << 8U | _defaultfile_map[3])
-#define _MAP_LASERMIN_VALUE (_defaultfile_map[4] << 24U | _defaultfile_map[5] << 16U | _defaultfile_map[6] << 8U | _defaultfile_map[7])
-#define _MAP_LASERMAX_VALUE (_defaultfile_map[8] << 24U | _defaultfile_map[9] << 16U | _defaultfile_map[10] << 8U | _defaultfile_map[11])
-#define _MAP_CLOCKFREQ_VALUE (_defaultfile_map[12] << 24U | _defaultfile_map[13] << 16U | _defaultfile_map[14] << 8U | _defaultfile_map[15])
-#define _MAP_SATURATION_VALUE _defaultfile_map[16]
-#define _MAP_HASDEFAULTANCHORS_VALUE _defaultfile_map[17]
+#define _SCALE_SHIFT 0
+#define _LASERMIN_SHIFT 4
+#define _LASERMAX_SHIFT 8
+#define _CLOCK_SHIFT 12
+#define _SAT_SHIFT 16
+#define _HASFILE_SHIFT 17
+#define _FILENAME_SHIFT 18
+
+#define _MAP_SCALEWIDTH_VALUE (_defaultfile_map[_SCALE_SHIFT] << 24U | _defaultfile_map[_SCALE_SHIFT+1] << 16U | _defaultfile_map[_SCALE_SHIFT+2] << 8U | _defaultfile_map[_SCALE_SHIFT+3])
+#define _MAP_LASERMIN_VALUE (_defaultfile_map[_LASERMIN_SHIFT] << 24U | _defaultfile_map[_LASERMIN_SHIFT+1] << 16U | _defaultfile_map[_LASERMIN_SHIFT+2] << 8U | _defaultfile_map[_LASERMIN_SHIFT+3])
+#define _MAP_LASERMAX_VALUE (_defaultfile_map[_LASERMAX_SHIFT] << 24U | _defaultfile_map[_LASERMAX_SHIFT+1] << 16U | _defaultfile_map[_LASERMAX_SHIFT+2] << 8U | _defaultfile_map[_LASERMAX_SHIFT+3])
+#define _MAP_CLOCKFREQ_VALUE (_defaultfile_map[_CLOCK_SHIFT] << 24U | _defaultfile_map[_CLOCK_SHIFT+1] << 16U | _defaultfile_map[_CLOCK_SHIFT+2] << 8U | _defaultfile_map[_CLOCK_SHIFT+3])
+#define _MAP_SATURATION_VALUE _defaultfile_map[_SAT_SHIFT]
+#define _MAP_HASDEFAULTANCHORS_VALUE _defaultfile_map[_HASFILE_SHIFT]
 
 WorkerFileHandler::WorkerFileHandler(QObject *parent) : QObject{parent}{
 
@@ -114,21 +122,21 @@ bool WorkerFileHandler::SetDefaultAnchorFilename(QString filename){
     if(!fp.open(QIODevice::ReadWrite | QIODevice::Truncate))
         return false;
 
-    if(!fp.resize(18))
+    if(!fp.resize(_FILENAME_SHIFT))
         return false;
 
     if(!MapDefaultFile())
         return false;
 
     if(filename.isEmpty()){
-        _defaultfile_map[17] = 0;
+        _defaultfile_map[_HASFILE_SHIFT] = 0;
     }else{
         QTextStream out(&fp);
 
-        out.seek(18);
+        out.seek(_FILENAME_SHIFT);
         out << filename;
 
-        _defaultfile_map[17] = 1;
+        _defaultfile_map[_HASFILE_SHIFT] = 1;
     }
 
     fp.close();
@@ -146,7 +154,7 @@ QString WorkerFileHandler::GetDefaultAnchorFilename(){
     QTextStream in(&fp);
     QString filename;
 
-    in.seek(18);
+    in.seek(_FILENAME_SHIFT);
 
     filename = in.readLine();
 
@@ -157,34 +165,34 @@ QString WorkerFileHandler::GetDefaultAnchorFilename(){
 void WorkerFileHandler::SetSaturation(uint8_t value){
     if(value == _MAP_SATURATION_VALUE)
         return;
-    _defaultfile_map[16] = value;
+    _defaultfile_map[_SAT_SHIFT] = value;
 }
 
 void WorkerFileHandler::SetScaleWidth(uint32_t value){
     if(value == _MAP_SCALEWIDTH_VALUE)
         return;
-    _defaultfile_map[0] = ((value >> 24) & 0xFF);
-    _defaultfile_map[1] = ((value >> 16) & 0xFF);
-    _defaultfile_map[2] = ((value >> 8) & 0xFF);
-    _defaultfile_map[3] = (value & 0xFF);
+    _defaultfile_map[_SCALE_SHIFT] = ((value >> 24) & 0xFF);
+    _defaultfile_map[_SCALE_SHIFT+1] = ((value >> 16) & 0xFF);
+    _defaultfile_map[_SCALE_SHIFT+2] = ((value >> 8) & 0xFF);
+    _defaultfile_map[_SCALE_SHIFT+3] = (value & 0xFF);
 }
 
 void WorkerFileHandler::SetLaserMax(uint32_t value){
     if(value == _MAP_LASERMAX_VALUE)
         return;
-    _defaultfile_map[8] = ((value >> 24) & 0xFF);
-    _defaultfile_map[9] = ((value >> 16) & 0xFF);
-    _defaultfile_map[10] = ((value >> 8) & 0xFF);
-    _defaultfile_map[11] = (value & 0xFF);
+    _defaultfile_map[_LASERMAX_SHIFT] = ((value >> 24) & 0xFF);
+    _defaultfile_map[_LASERMAX_SHIFT+1] = ((value >> 16) & 0xFF);
+    _defaultfile_map[_LASERMAX_SHIFT+2] = ((value >> 8) & 0xFF);
+    _defaultfile_map[_LASERMAX_SHIFT+3] = (value & 0xFF);
 }
 
 void WorkerFileHandler::SetLaserMin(uint32_t value){
     if(value == _MAP_LASERMIN_VALUE)
         return;
-    _defaultfile_map[4] = ((value >> 24) & 0xFF);
-    _defaultfile_map[5] = ((value >> 16) & 0xFF);
-    _defaultfile_map[6] = ((value >> 8) & 0xFF);
-    _defaultfile_map[7] = (value & 0xFF);
+    _defaultfile_map[_LASERMIN_SHIFT] = ((value >> 24) & 0xFF);
+    _defaultfile_map[_LASERMIN_SHIFT+1] = ((value >> 16) & 0xFF);
+    _defaultfile_map[_LASERMIN_SHIFT+2] = ((value >> 8) & 0xFF);
+    _defaultfile_map[_LASERMIN_SHIFT+3] = (value & 0xFF);
 }
 
 void WorkerFileHandler::SetClock(float value){
@@ -192,10 +200,10 @@ void WorkerFileHandler::SetClock(float value){
     memcpy(&auxvalue, &value ,4);
     if(auxvalue == _MAP_CLOCKFREQ_VALUE)
         return;
-    _defaultfile_map[12] = ((auxvalue >> 24UL) & 0xFF);
-    _defaultfile_map[13] = ((auxvalue >> 16UL) & 0xFF);
-    _defaultfile_map[14] = ((auxvalue >> 8UL) & 0xFF);
-    _defaultfile_map[15] = (auxvalue & 0xFF);
+    _defaultfile_map[_CLOCK_SHIFT] = ((auxvalue >> 24UL) & 0xFF);
+    _defaultfile_map[_CLOCK_SHIFT+1] = ((auxvalue >> 16UL) & 0xFF);
+    _defaultfile_map[_CLOCK_SHIFT+2] = ((auxvalue >> 8UL) & 0xFF);
+    _defaultfile_map[_CLOCK_SHIFT+3] = (auxvalue & 0xFF);
 }
 
 void WorkerFileHandler::OpenAnchorFile(QString filename){

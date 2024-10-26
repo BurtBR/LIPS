@@ -16,7 +16,7 @@ class MainWindow : public QMainWindow{
 
 private:
     Ui::MainWindow *_ui;
-    QThread *_threadVideo = nullptr, *_threadImageProcessing = nullptr, *_threadFileHandling = nullptr;
+    QThread *_threadVideo = nullptr, *_threadImageProcessing = nullptr, *_threadFileHandling = nullptr, *_threadPositioning = nullptr;
     bool _isPlaying = false;
     int _frameBalance = 0;
 
