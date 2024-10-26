@@ -49,6 +49,7 @@ public slots:
 signals:
     void FrameReady(QPixmap frame);
     void Message(QString);
+    void AnchorsOnFrame(QVector<QRect>);
 };
 
 #endif // WORKERIMAGEPROCESSING_H
