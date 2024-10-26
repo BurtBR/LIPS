@@ -222,8 +222,20 @@ bool MainWindow::StartThreadFileHandling(){
 
     connect(worker, &WorkerFileHandler::Message, this, &MainWindow::ConsoleMessage);
     connect(worker, &WorkerFileHandler::SetDefaultValues, this, &MainWindow::SetDefaultValues);
+    connect(worker, &WorkerFileHandler::SetFx, this, &MainWindow::SetFxFromFile);
+    connect(worker, &WorkerFileHandler::SetFy, this, &MainWindow::SetFyFromFile);
+    connect(worker, &WorkerFileHandler::SetCx, this, &MainWindow::SetCxFromFile);
+    connect(worker, &WorkerFileHandler::SetCy, this, &MainWindow::SetCyFromFile);
+    connect(worker, &WorkerFileHandler::SetK1, this, &MainWindow::SetK1FromFile);
+    connect(worker, &WorkerFileHandler::SetK2, this, &MainWindow::SetK2FromFile);
+    connect(worker, &WorkerFileHandler::SetP1, this, &MainWindow::SetP1FromFile);
+    connect(worker, &WorkerFileHandler::SetP2, this, &MainWindow::SetP2FromFile);
+    connect(worker, &WorkerFileHandler::SetRmatrix, this, &MainWindow::SetRmatrix);
+    connect(worker, &WorkerFileHandler::AppendAnchor, this, &MainWindow::AppendAnchorFromFile);
 
     connect(this, &MainWindow::FileLoadDefault, worker, &WorkerFileHandler::GetDefaultValues);
+    connect(this, &MainWindow::AnchorFileLoad, worker, &WorkerFileHandler::OpenAnchorFile);
+
     connect(_ui->spinSaturation, &QSpinBox::valueChanged, worker, &WorkerFileHandler::SetSaturation);
     connect(_ui->spinScale, &QSpinBox::valueChanged, worker, &WorkerFileHandler::SetScaleWidth);
     connect(_ui->spinMaxRadius, &QSpinBox::valueChanged, worker, &WorkerFileHandler::SetLaserMax);
@@ -284,6 +296,77 @@ void MainWindow::SetDefaultValues(uint8_t saturation, uint32_t scalewidth, uint3
     _ui->spinMinRadius->setValue(anchormin);
     _ui->spinMaxRadius->setValue(anchormax);
     _ui->spinClock->setValue(clock);
+}
+
+void MainWindow::SetFxFromFile(QString value){
+    _ui->lineFx->setText(value);
+    emit _ui->lineFx->editingFinished();
+}
+
+void MainWindow::SetFyFromFile(QString value){
+    _ui->lineFy->setText(value);
+    emit _ui->lineFy->editingFinished();
+}
+
+void MainWindow::SetCxFromFile(QString value){
+    _ui->lineCx->setText(value);
+    emit _ui->lineCx->editingFinished();
+}
+
+void MainWindow::SetCyFromFile(QString value){
+    _ui->lineCy->setText(value);
+    emit _ui->lineCy->editingFinished();
+}
+
+void MainWindow::SetK1FromFile(QString value){
+    _ui->lineK1->setText(value);
+    emit _ui->lineK1->editingFinished();
+}
+
+void MainWindow::SetK2FromFile(QString value){
+    _ui->lineK2->setText(value);
+    emit _ui->lineK2->editingFinished();
+}
+
+void MainWindow::SetP1FromFile(QString value){
+    _ui->lineP1->setText(value);
+    emit _ui->lineP1->editingFinished();
+}
+
+void MainWindow::SetP2FromFile(QString value){
+    _ui->lineP2->setText(value);
+    emit _ui->lineP2->editingFinished();
+}
+
+void MainWindow::SetRmatrix(QMatrix3x3 rmatrix){
+    _ui->lineR11->setText(QString::number(rmatrix(0,0)));
+    _ui->lineR12->setText(QString::number(rmatrix(0,1)));
+    _ui->lineR13->setText(QString::number(rmatrix(0,2)));
+    _ui->lineR21->setText(QString::number(rmatrix(1,0)));
+    _ui->lineR22->setText(QString::number(rmatrix(1,1)));
+    _ui->lineR23->setText(QString::number(rmatrix(1,2)));
+    _ui->lineR31->setText(QString::number(rmatrix(2,0)));
+    _ui->lineR32->setText(QString::number(rmatrix(2,1)));
+    _ui->lineR33->setText(QString::number(rmatrix(2,2)));
+    emit _ui->lineR11->editingFinished();
+    emit _ui->lineR12->editingFinished();
+    emit _ui->lineR13->editingFinished();
+    emit _ui->lineR21->editingFinished();
+    emit _ui->lineR22->editingFinished();
+    emit _ui->lineR23->editingFinished();
+    emit _ui->lineR31->editingFinished();
+    emit _ui->lineR32->editingFinished();
+    emit _ui->lineR33->editingFinished();
+}
+
+void MainWindow::AppendAnchorFromFile(QString code, float X, float Y, float Z){
+    int index = _ui->tableAnchors->rowCount();
+
+    _ui->tableAnchors->insertRow(index);
+    _ui->tableAnchors->setItem(index, 0, new QTableWidgetItem(code));
+    _ui->tableAnchors->setItem(index, 1, new QTableWidgetItem(QString::number(X)));
+    _ui->tableAnchors->setItem(index, 2, new QTableWidgetItem(QString::number(Y)));
+    _ui->tableAnchors->setItem(index, 3, new QTableWidgetItem(QString::number(Z)));
 }
 
 void MainWindow::On_checkSaturation_stateChanged(bool value){

@@ -88,11 +88,6 @@ void WorkerFileHandler::GetDefaultValues(){
 
     if(_MAP_HASDEFAULTANCHORS_VALUE)
         OpenAnchorFile(GetDefaultAnchorFilename());
-
-    //TEMP
-    if(!SetDefaultAnchorFilename("A.anchors")){
-        emit Message("Unable to save default anchor file");
-    }
 }
 
 bool WorkerFileHandler::CreateDefaultFile(){
@@ -207,5 +202,190 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
     if(!QFileInfo::exists(filename))
         return;
 
+    QFile fp(filename);
+    QString line;
+    QStringList strlist;
+    QMatrix3x3 rmatrix;
+    bool ok1, ok2, ok3;
 
+    if(!fp.open(QIODevice::ReadOnly | QIODevice::Text)){
+        emit Message("WorkerFileHandler: Unable to open anchor file");
+        return;
+    }
+
+    QTextStream in(&fp);
+
+    line = in.readLine();
+
+    if(line.compare("Fx;Fy") != 0){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    line = in.readLine();
+    strlist = line.split(';');
+
+    if(strlist.size()!= 2){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    emit SetFx(strlist[0]);
+    emit SetFy(strlist[1]);
+
+    line = in.readLine();
+
+    if(line.compare("Cx;Cy") != 0){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    line = in.readLine();
+    strlist = line.split(';');
+
+    if(strlist.size()!= 2){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    emit SetCx(strlist[0]);
+    emit SetCy(strlist[1]);
+
+    line = in.readLine();
+
+    if(line.compare("K1;K2") != 0){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    line = in.readLine();
+    strlist = line.split(';');
+
+    if(strlist.size()!= 2){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    emit SetK1(strlist[0]);
+    emit SetK2(strlist[1]);
+
+    line = in.readLine();
+
+    if(line.compare("P1;P2") != 0){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    line = in.readLine();
+    strlist = line.split(';');
+
+    if(strlist.size()!= 2){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    emit SetP1(strlist[0]);
+    emit SetP2(strlist[1]);
+
+    line = in.readLine();
+    strlist = line.split(';');
+
+    if(strlist.size()!= 4){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    rmatrix(0,0) = strlist[1].toFloat(&ok1);
+    rmatrix(0,1) = strlist[2].toFloat(&ok2);
+    rmatrix(0,2) = strlist[3].toFloat(&ok3);
+    if(!ok1 || !ok2 || !ok3){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    line = in.readLine();
+    strlist = line.split(';');
+
+    if(strlist.size()!= 4){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    if(strlist[0].compare("R") != 0){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    rmatrix(1,0) = strlist[1].toFloat(&ok1);
+    rmatrix(1,1) = strlist[2].toFloat(&ok2);
+    rmatrix(1,2) = strlist[3].toFloat(&ok3);
+    if(!ok1 || !ok2 || !ok3){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    line = in.readLine();
+    strlist = line.split(';');
+
+    if(strlist.size()!= 4){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    rmatrix(2,0) = strlist[1].toFloat(&ok1);
+    rmatrix(2,1) = strlist[2].toFloat(&ok2);
+    rmatrix(2,2) = strlist[3].toFloat(&ok3);
+    if(!ok1 || !ok2 || !ok3){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    emit SetRmatrix(rmatrix);
+
+    line = in.readLine();
+    if(line.compare("Anchors") != 0){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    line = in.readLine();
+    if(line.compare("Code;X;Y;Z") != 0){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file");
+        return;
+    }
+
+    while(!in.atEnd()){
+        line = in.readLine();
+        strlist = line.split(';');
+        if(strlist.size()!= 4){
+            fp.close();
+            emit Message("WorkerFileHandler: Corrupted anchor file");
+            return;
+        }
+        emit AppendAnchor(strlist[0], strlist[1].toFloat(&ok1), strlist[2].toFloat(&ok2), strlist[3].toFloat(&ok3));
+        if(!ok1 || !ok2 || !ok3){
+            fp.close();
+            emit Message("WorkerFileHandler: Corrupted anchor file");
+            return;
+        }
+    }
+
+    fp.close();
 }

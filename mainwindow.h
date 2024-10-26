@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QThread>
+#include <QMatrix3x3>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -36,6 +37,16 @@ private slots:
     void VideoEnded();
     void VideoSentFrame();
     void SetDefaultValues(uint8_t saturation, uint32_t scalewidth, uint32_t anchormin, uint32_t anchormax, float clock);
+    void SetFxFromFile(QString value);
+    void SetFyFromFile(QString value);
+    void SetCxFromFile(QString value);
+    void SetCyFromFile(QString value);
+    void SetK1FromFile(QString value);
+    void SetK2FromFile(QString value);
+    void SetP1FromFile(QString value);
+    void SetP2FromFile(QString value);
+    void SetRmatrix(QMatrix3x3 rmatrix);
+    void AppendAnchorFromFile(QString code, float X, float Y, float Z);
     void On_checkSaturation_stateChanged(bool value);
     void On_checkFilter_stateChanged(bool value);
     void On_checkPositioning_stateChanged(bool value);
@@ -81,5 +92,6 @@ signals:
     void SetP1(float);
     void SetP2(float);
     void FileLoadDefault();
+    void AnchorFileLoad(QString);
 };
 #endif // MAINWINDOW_H

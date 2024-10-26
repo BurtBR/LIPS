@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QFile>
+#include <QMatrix3x3>
 
 class WorkerFileHandler : public QObject{
     Q_OBJECT
@@ -32,6 +33,16 @@ public slots:
 signals:
     void Message(QString);
     void SetDefaultValues(uint8_t, uint32_t, uint32_t, uint32_t, float);
+    void SetFx(QString);
+    void SetFy(QString);
+    void SetCx(QString);
+    void SetCy(QString);
+    void SetK1(QString);
+    void SetK2(QString);
+    void SetP1(QString);
+    void SetP2(QString);
+    void SetRmatrix(QMatrix3x3);
+    void AppendAnchor(QString,float,float,float);
 };
 
 #endif // WORKERFILEHANDLER_H
