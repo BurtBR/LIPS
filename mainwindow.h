@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QThread>
 #include <QMatrix3x3>
+#include <QTableWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -94,5 +95,7 @@ signals:
     void SetP2(float);
     void FileLoadDefault();
     void AnchorFileLoad(QString);
+    void SetAnchorSourceTable(QTableWidget*);
+    void UpdateAnchorsFromTable();
 };
 #endif // MAINWINDOW_H

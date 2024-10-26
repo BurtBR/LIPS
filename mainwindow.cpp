@@ -45,6 +45,8 @@ bool MainWindow::Init(){
     if(!StartThreadPositioning())
         return false;
 
+    emit SetAnchorSourceTable(_ui->tableAnchors);
+
     emit VideoPlayerInit();
 
     try{
@@ -271,6 +273,9 @@ bool MainWindow::StartThreadPositioning(){
 
     connect(_threadPositioning, &QThread::finished, worker, &WorkerPositioning::deleteLater);
 
+    connect(this, &MainWindow::SetAnchorSourceTable, worker, &WorkerPositioning::SetAnchorSource);
+    connect(this, &MainWindow::UpdateAnchorsFromTable, worker, &WorkerPositioning::UpdateAnchorValues);
+
     worker->moveToThread(_threadPositioning);
     _threadPositioning->start();
 
@@ -396,6 +401,8 @@ void MainWindow::AppendAnchorFromFile(QString code, float X, float Y, float Z){
     _ui->tableAnchors->setItem(index, 1, new QTableWidgetItem(QString::number(X)));
     _ui->tableAnchors->setItem(index, 2, new QTableWidgetItem(QString::number(Y)));
     _ui->tableAnchors->setItem(index, 3, new QTableWidgetItem(QString::number(Z)));
+
+    emit UpdateAnchorsFromTable();
 }
 
 void MainWindow::On_checkSaturation_stateChanged(bool value){
