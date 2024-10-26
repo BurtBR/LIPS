@@ -1,6 +1,7 @@
 #include "workerfilehandler.h"
 #include <QFileInfo>
 #include <QDataStream>
+#include <QTextStream>
 
 volatile uint8_t* WorkerFileHandler::_defaultfile_map = nullptr;
 QFile* WorkerFileHandler::_defaultfile = nullptr;
@@ -17,12 +18,48 @@ WorkerFileHandler::WorkerFileHandler(QObject *parent) : QObject{parent}{
 }
 
 WorkerFileHandler::~WorkerFileHandler(){
+    UnmapDefaultFile();
+}
+
+bool WorkerFileHandler::MapDefaultFile(){
+    if(!_defaultfile_map){
+        try{
+            _defaultfile = new QFile(_defaultfilename);
+        }catch(...){
+            emit Message("WorkerFileHandler: Unable to allocate memory for default values file");
+            return false;
+        }
+
+        if(!_defaultfile->open(QIODevice::ReadWrite)){
+            emit Message("WorkerFileHandler: Unable to open default values file");
+            delete _defaultfile;
+            _defaultfile = nullptr;
+            return false;
+        }
+
+        _defaultfile_map = _defaultfile->map(0,18);
+
+        _defaultfile->close();
+
+        if(!_defaultfile_map){
+            delete _defaultfile;
+            _defaultfile = nullptr;
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool WorkerFileHandler::UnmapDefaultFile(){
     if(_defaultfile_map){
         _defaultfile->unmap((uchar*)_defaultfile_map);
         delete _defaultfile;
         _defaultfile = nullptr;
         _defaultfile_map = nullptr;
+        return true;
     }
+    return false;
 }
 
 void WorkerFileHandler::GetDefaultValues(){
@@ -38,27 +75,7 @@ void WorkerFileHandler::GetDefaultValues(){
         }
     }
 
-    try{
-        _defaultfile = new QFile(_defaultfilename);
-    }catch(...){
-        emit Message("WorkerFileHandler: Unable to allocate memory for default values file");
-        return;
-    }
-
-    if(!_defaultfile->open(QIODevice::ReadWrite)){
-        emit Message("WorkerFileHandler: Unable to open default values file");
-        delete _defaultfile;
-        _defaultfile = nullptr;
-        return;
-    }
-
-    _defaultfile_map = _defaultfile->map(0,18);
-
-    _defaultfile->close();
-
-    if(!_defaultfile_map){
-        delete _defaultfile;
-        _defaultfile = nullptr;
+    if(!MapDefaultFile()){
         emit Message("WorkerFileHandler: Unable to map default values file");
         return;
     }
@@ -67,9 +84,15 @@ void WorkerFileHandler::GetDefaultValues(){
     uint32_t intaux = _MAP_CLOCKFREQ_VALUE;
     memcpy(&doubleaux, &intaux, 4);
 
-    _defaultanchorfile = QString(); // CHANGE HERE TO LOAD FILE
-
     emit SetDefaultValues(_MAP_SATURATION_VALUE, _MAP_SCALEWIDTH_VALUE, _MAP_LASERMIN_VALUE, _MAP_LASERMAX_VALUE, doubleaux);
+
+    if(_MAP_HASDEFAULTANCHORS_VALUE)
+        OpenAnchorFile(GetDefaultAnchorFilename());
+
+    //TEMP
+    if(!SetDefaultAnchorFilename("A.anchors")){
+        emit Message("Unable to save default anchor file");
+    }
 }
 
 bool WorkerFileHandler::CreateDefaultFile(){
@@ -81,18 +104,65 @@ bool WorkerFileHandler::CreateDefaultFile(){
     QDataStream out(&fp);
     out.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
-    _defaultanchorfile.clear();
-
     out << 700 << 5 << 20 << 5.0 << (uint8_t)230 << (uint8_t)0;
 
     fp.close();
     return true;
 }
 
+bool WorkerFileHandler::SetDefaultAnchorFilename(QString filename){
+    QFile fp(_defaultfilename);
+
+    if(!UnmapDefaultFile())
+        return false;
+
+    if(!fp.open(QIODevice::ReadWrite | QIODevice::Truncate))
+        return false;
+
+    if(!fp.resize(18))
+        return false;
+
+    if(!MapDefaultFile())
+        return false;
+
+    if(filename.isEmpty()){
+        _defaultfile_map[17] = 0;
+    }else{
+        QTextStream out(&fp);
+
+        out.seek(18);
+        out << filename;
+
+        _defaultfile_map[17] = 1;
+    }
+
+    fp.close();
+    return true;
+}
+
+QString WorkerFileHandler::GetDefaultAnchorFilename(){
+    QFile fp(_defaultfilename);
+
+    if(!fp.open(QIODevice::ReadOnly | QIODevice::Text)){
+        emit Message("WorkerFileHandler: Unable to open default anchors file");
+        return QString();
+    }
+
+    QTextStream in(&fp);
+    QString filename;
+
+    in.seek(18);
+
+    filename = in.readLine();
+
+    fp.close();
+    return filename;
+}
+
 void WorkerFileHandler::SetSaturation(uint8_t value){
     if(value == _MAP_SATURATION_VALUE)
         return;
-    _defaultfile_map[16] = (value & 0xFF);
+    _defaultfile_map[16] = value;
 }
 
 void WorkerFileHandler::SetScaleWidth(uint32_t value){
@@ -131,4 +201,11 @@ void WorkerFileHandler::SetClock(float value){
     _defaultfile_map[13] = ((auxvalue >> 16UL) & 0xFF);
     _defaultfile_map[14] = ((auxvalue >> 8UL) & 0xFF);
     _defaultfile_map[15] = (auxvalue & 0xFF);
+}
+
+void WorkerFileHandler::OpenAnchorFile(QString filename){
+    if(!QFileInfo::exists(filename))
+        return;
+
+
 }

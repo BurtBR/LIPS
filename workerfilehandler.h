@@ -10,9 +10,12 @@ private:
     static volatile uint8_t* _defaultfile_map;
     static QFile *_defaultfile;
     const char *_defaultfilename = "defaulvalues.lips";
-    QString _defaultanchorfile;
 
+    bool MapDefaultFile();
+    bool UnmapDefaultFile();
     bool CreateDefaultFile();
+    bool SetDefaultAnchorFilename(QString filename);
+    QString GetDefaultAnchorFilename();
 public:
     WorkerFileHandler(QObject *parent = nullptr);
     ~WorkerFileHandler();
@@ -24,6 +27,7 @@ public slots:
     void SetLaserMax(uint32_t value);
     void SetLaserMin(uint32_t value);
     void SetClock(float value);
+    void OpenAnchorFile(QString filename);
 
 signals:
     void Message(QString);
