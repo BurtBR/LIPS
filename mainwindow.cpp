@@ -275,6 +275,7 @@ bool MainWindow::StartThreadPositioning(){
 
     connect(this, &MainWindow::SetAnchorSourceTable, worker, &WorkerPositioning::SetAnchorSource);
     connect(this, &MainWindow::UpdateAnchorsFromTable, worker, &WorkerPositioning::UpdateAnchorValues);
+    connect(this, &MainWindow::VideoPlay, worker, &WorkerPositioning::UpdateAnchorValues);
 
     worker->moveToThread(_threadPositioning);
     _threadPositioning->start();
