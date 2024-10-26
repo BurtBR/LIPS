@@ -8,9 +8,9 @@ QFile* WorkerFileHandler::_defaultfile = nullptr;
 #define _MAP_SCALEWIDTH_VALUE (_defaultfile_map[0] << 24U | _defaultfile_map[1] << 16U | _defaultfile_map[2] << 8U | _defaultfile_map[3])
 #define _MAP_LASERMIN_VALUE (_defaultfile_map[4] << 24U | _defaultfile_map[5] << 16U | _defaultfile_map[6] << 8U | _defaultfile_map[7])
 #define _MAP_LASERMAX_VALUE (_defaultfile_map[8] << 24U | _defaultfile_map[9] << 16U | _defaultfile_map[10] << 8U | _defaultfile_map[11])
-#define _MAP_CLOCKFREQ_VALUE ((uint64_t)_defaultfile_map[12] << 56UL | (uint64_t)_defaultfile_map[13] << 48UL | (uint64_t)_defaultfile_map[14] << 40UL | (uint64_t)_defaultfile_map[15] << 32UL | (uint64_t)_defaultfile_map[16] << 24UL | (uint64_t)_defaultfile_map[17] << 16UL | (uint64_t)_defaultfile_map[18] << 8UL | (uint64_t)_defaultfile_map[19])
-#define _MAP_SATURATION_VALUE (uint8_t)_defaultfile_map[20]
-#define _MAP_HASDEFAULTANCHORS_VALUE (uint8_t)_defaultfile_map[21]
+#define _MAP_CLOCKFREQ_VALUE (_defaultfile_map[12] << 24U | _defaultfile_map[13] << 16U | _defaultfile_map[14] << 8U | _defaultfile_map[15])
+#define _MAP_SATURATION_VALUE _defaultfile_map[16]
+#define _MAP_HASDEFAULTANCHORS_VALUE _defaultfile_map[17]
 
 WorkerFileHandler::WorkerFileHandler(QObject *parent) : QObject{parent}{
 
@@ -52,7 +52,7 @@ void WorkerFileHandler::GetDefaultValues(){
         return;
     }
 
-    _defaultfile_map = _defaultfile->map(0,22);
+    _defaultfile_map = _defaultfile->map(0,18);
 
     _defaultfile->close();
 
@@ -63,9 +63,9 @@ void WorkerFileHandler::GetDefaultValues(){
         return;
     }
 
-    double doubleaux;
-    uint64_t intaux = _MAP_CLOCKFREQ_VALUE;
-    memcpy(&doubleaux, &intaux, 8);
+    float doubleaux;
+    uint32_t intaux = _MAP_CLOCKFREQ_VALUE;
+    memcpy(&doubleaux, &intaux, 4);
 
     _defaultanchorfile = QString(); // CHANGE HERE TO LOAD FILE
 
@@ -79,6 +79,7 @@ bool WorkerFileHandler::CreateDefaultFile(){
         return false;
 
     QDataStream out(&fp);
+    out.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
     _defaultanchorfile.clear();
 
@@ -91,7 +92,7 @@ bool WorkerFileHandler::CreateDefaultFile(){
 void WorkerFileHandler::SetSaturation(uint8_t value){
     if(value == _MAP_SATURATION_VALUE)
         return;
-    _defaultfile_map[20] = (value & 0xFF);
+    _defaultfile_map[16] = (value & 0xFF);
 }
 
 void WorkerFileHandler::SetScaleWidth(uint32_t value){
@@ -121,17 +122,13 @@ void WorkerFileHandler::SetLaserMin(uint32_t value){
     _defaultfile_map[7] = (value & 0xFF);
 }
 
-void WorkerFileHandler::SetClock(double value){
-    uint64_t auxvalue;
-    memcpy(&auxvalue, &value ,8);
+void WorkerFileHandler::SetClock(float value){
+    uint32_t auxvalue;
+    memcpy(&auxvalue, &value ,4);
     if(auxvalue == _MAP_CLOCKFREQ_VALUE)
         return;
-    _defaultfile_map[12] = ((auxvalue >> 56UL) & 0xFF);
-    _defaultfile_map[13] = ((auxvalue >> 48UL) & 0xFF);
-    _defaultfile_map[14] = ((auxvalue >> 40UL) & 0xFF);
-    _defaultfile_map[15] = ((auxvalue >> 32UL) & 0xFF);
-    _defaultfile_map[16] = ((auxvalue >> 24UL) & 0xFF);
-    _defaultfile_map[17] = ((auxvalue >> 16UL) & 0xFF);
-    _defaultfile_map[18] = ((auxvalue >> 8UL) & 0xFF);
-    _defaultfile_map[19] = (auxvalue & 0xFF);
+    _defaultfile_map[12] = ((auxvalue >> 24UL) & 0xFF);
+    _defaultfile_map[13] = ((auxvalue >> 16UL) & 0xFF);
+    _defaultfile_map[14] = ((auxvalue >> 8UL) & 0xFF);
+    _defaultfile_map[15] = (auxvalue & 0xFF);
 }

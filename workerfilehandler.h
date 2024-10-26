@@ -23,7 +23,7 @@ public slots:
     void SetScaleWidth(uint32_t value);
     void SetLaserMax(uint32_t value);
     void SetLaserMin(uint32_t value);
-    void SetClock(double value);
+    void SetClock(float value);
 
 signals:
     void Message(QString);
