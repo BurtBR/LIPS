@@ -6,6 +6,7 @@
 #include "workervideo.h"
 #include "workerimageprocessing.h"
 #include "workerfilehandler.h"
+#include "workerpositioning.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
@@ -39,6 +40,9 @@ bool MainWindow::Init(){
         return false;
 
     if(!StartThreadFileHandling())
+        return false;
+
+    if(!StartThreadPositioning())
         return false;
 
     emit VideoPlayerInit();
@@ -241,6 +245,34 @@ bool MainWindow::StartThreadFileHandling(){
 
     worker->moveToThread(_threadFileHandling);
     _threadFileHandling->start();
+
+    return true;
+}
+
+bool MainWindow::StartThreadPositioning(){
+    if(_threadPositioning)
+        return false;
+
+    WorkerPositioning *worker;
+
+    try{
+        _threadPositioning = new QThread;
+    }catch(...){
+        return false;
+    }
+
+    try{
+        worker = new WorkerPositioning;
+    }catch(...){
+        delete _threadPositioning;
+        _threadPositioning = nullptr;
+        return false;
+    }
+
+    connect(_threadPositioning, &QThread::finished, worker, &WorkerPositioning::deleteLater);
+
+    worker->moveToThread(_threadPositioning);
+    _threadPositioning->start();
 
     return true;
 }

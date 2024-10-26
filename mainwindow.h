@@ -23,6 +23,7 @@ private:
     void DeleteThread(QThread **threadptr);
     bool StartThreadVideo();
     bool StartThreadFileHandling();
+    bool StartThreadPositioning();
 
 public:
     MainWindow(QWidget *parent = nullptr);
