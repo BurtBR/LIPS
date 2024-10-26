@@ -45,7 +45,7 @@ bool WorkerFileHandler::MapDefaultFile(){
             return false;
         }
 
-        _defaultfile_map = _defaultfile->map(0,18);
+        _defaultfile_map = _defaultfile->map(0,_FILENAME_SHIFT);
 
         _defaultfile->close();
 
