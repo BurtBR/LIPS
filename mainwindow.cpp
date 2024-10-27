@@ -36,13 +36,10 @@ void MainWindow::DeleteThread(QThread **threadptr){
 
 bool MainWindow::Init(){
 
-    if(!StartThreadVideo())
+    if(!StartMainThreads())
         return false;
 
     if(!StartThreadFileHandling())
-        return false;
-
-    if(!StartThreadPositioning())
         return false;
 
     emit SetAnchorSourceTable(_ui->tableAnchors);
@@ -109,13 +106,14 @@ bool MainWindow::Init(){
     return true;
 }
 
-bool MainWindow::StartThreadVideo(){
+bool MainWindow::StartMainThreads(){
 
-    if(_threadVideo || _threadImageProcessing)
+    if(_threadVideo || _threadImageProcessing || _threadPositioning)
         return false;
 
     WorkerVideo *worker= nullptr;
     WorkerImageProcessing *workerImage = nullptr;
+    WorkerPositioning *workerPosition = nullptr;
 
     try{
         _threadVideo = new QThread;
@@ -134,12 +132,24 @@ bool MainWindow::StartThreadVideo(){
     }
 
     try{
+        _threadPositioning = new QThread;
+    }catch(...){
+        delete _threadVideo;
+        _threadVideo = nullptr;
+        delete _threadImageProcessing;
+        _threadImageProcessing = nullptr;
+        return false;
+    }
+
+    try{
         worker = new WorkerVideo;
     }catch(...){
         delete _threadVideo;
         _threadVideo = nullptr;
         delete _threadImageProcessing;
         _threadImageProcessing = nullptr;
+        delete _threadPositioning;
+        _threadPositioning = nullptr;
         return false;
     }
 
@@ -150,13 +160,32 @@ bool MainWindow::StartThreadVideo(){
         _threadVideo = nullptr;
         delete _threadImageProcessing;
         _threadImageProcessing = nullptr;
+        delete _threadPositioning;
+        _threadPositioning = nullptr;
         delete worker;
         worker = nullptr;
         return false;
     }
 
+    try{
+        workerPosition = new WorkerPositioning;
+    }catch(...){
+        delete _threadVideo;
+        _threadVideo = nullptr;
+        delete _threadImageProcessing;
+        _threadImageProcessing = nullptr;
+        delete _threadPositioning;
+        _threadPositioning = nullptr;
+        delete worker;
+        worker = nullptr;
+        delete workerImage;
+        workerImage = nullptr;
+        return false;
+    }
+
     connect(_threadImageProcessing, &QThread::finished, workerImage, &WorkerImageProcessing::deleteLater);
     connect(_threadVideo, &QThread::finished, worker, &WorkerVideo::deleteLater);
+    connect(_threadPositioning, &QThread::finished, workerPosition, &WorkerPositioning::deleteLater);
 
     connect(worker, &WorkerVideo::ErrorMessage, this, &MainWindow::ConsoleMessage);
     connect(worker, &WorkerVideo::EndOfMedia, this, &MainWindow::VideoEnded);
@@ -166,6 +195,12 @@ bool MainWindow::StartThreadVideo(){
     connect(workerImage, &WorkerImageProcessing::FrameReady, this, &MainWindow::FrameReady);
     connect(workerImage, &WorkerImageProcessing::Message, this, &MainWindow::ConsoleMessage);
 
+    connect(workerPosition, &WorkerPositioning::Message, this, &MainWindow::ConsoleMessage);
+
+    connect(workerImage, &WorkerImageProcessing::AnchorsOnFrame, workerPosition, &WorkerPositioning::AnchorsInFrame);
+
+    connect(worker, &WorkerVideo::VideoFPSChanged, workerPosition, &WorkerPositioning::SetFPS);
+
     connect(worker, &WorkerVideo::FrameReady, workerImage, &WorkerImageProcessing::ProcessFrame);
 
     connect(this, &MainWindow::VideoPlayerInit, worker, &WorkerVideo::Init);
@@ -174,6 +209,7 @@ bool MainWindow::StartThreadVideo(){
     connect(this, &MainWindow::VideoPause, worker, &WorkerVideo::Pause);
     connect(this, &MainWindow::VideoStop, worker, &WorkerVideo::Stop);
     connect(this, &MainWindow::SetVideoGrayscale, worker, &WorkerVideo::SetGrayscale);
+
     connect(this, &MainWindow::SetFx, workerImage, &WorkerImageProcessing::SetFx);
     connect(this, &MainWindow::SetFy, workerImage, &WorkerImageProcessing::SetFy);
     connect(this, &MainWindow::SetCx, workerImage, &WorkerImageProcessing::SetCx);
@@ -182,6 +218,11 @@ bool MainWindow::StartThreadVideo(){
     connect(this, &MainWindow::SetK2, workerImage, &WorkerImageProcessing::SetK2);
     connect(this, &MainWindow::SetP1, workerImage, &WorkerImageProcessing::SetP1);
     connect(this, &MainWindow::SetP2, workerImage, &WorkerImageProcessing::SetP2);
+
+    connect(this, &MainWindow::SetAnchorSourceTable, workerPosition, &WorkerPositioning::SetAnchorSource);
+    connect(this, &MainWindow::ResetAnchorResults, workerPosition, &WorkerPositioning::ResetResults);
+
+    connect(_ui->spinClock, &QDoubleSpinBox::valueChanged, workerPosition, &WorkerPositioning::SetClockFreq);
 
     connect(_ui->spinScale, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetScaleWidth);
     connect(_ui->spinSaturation, &QSpinBox::valueChanged, workerImage, &WorkerImageProcessing::SetThreshold);
@@ -194,6 +235,8 @@ bool MainWindow::StartThreadVideo(){
 
     worker->moveToThread(_threadVideo);
     workerImage->moveToThread(_threadImageProcessing);
+    workerPosition->moveToThread(_threadPositioning);
+    _threadPositioning->start();
     _threadImageProcessing->start(QThread::HighestPriority);
     _threadVideo->start();
 
@@ -247,38 +290,6 @@ bool MainWindow::StartThreadFileHandling(){
 
     worker->moveToThread(_threadFileHandling);
     _threadFileHandling->start();
-
-    return true;
-}
-
-bool MainWindow::StartThreadPositioning(){
-    if(_threadPositioning)
-        return false;
-
-    WorkerPositioning *worker;
-
-    try{
-        _threadPositioning = new QThread;
-    }catch(...){
-        return false;
-    }
-
-    try{
-        worker = new WorkerPositioning;
-    }catch(...){
-        delete _threadPositioning;
-        _threadPositioning = nullptr;
-        return false;
-    }
-
-    connect(_threadPositioning, &QThread::finished, worker, &WorkerPositioning::deleteLater);
-
-    connect(this, &MainWindow::SetAnchorSourceTable, worker, &WorkerPositioning::SetAnchorSource);
-    connect(this, &MainWindow::UpdateAnchorsFromTable, worker, &WorkerPositioning::UpdateAnchorValues);
-    connect(this, &MainWindow::VideoPlay, worker, &WorkerPositioning::UpdateAnchorValues);
-
-    worker->moveToThread(_threadPositioning);
-    _threadPositioning->start();
 
     return true;
 }
@@ -402,8 +413,6 @@ void MainWindow::AppendAnchorFromFile(QString code, float X, float Y, float Z){
     _ui->tableAnchors->setItem(index, 1, new QTableWidgetItem(QString::number(X)));
     _ui->tableAnchors->setItem(index, 2, new QTableWidgetItem(QString::number(Y)));
     _ui->tableAnchors->setItem(index, 3, new QTableWidgetItem(QString::number(Z)));
-
-    emit UpdateAnchorsFromTable();
 }
 
 void MainWindow::On_checkSaturation_stateChanged(bool value){
@@ -459,7 +468,9 @@ void MainWindow::On_buttonInsertAnchor_clicked(){
 }
 
 void MainWindow::On_buttonRemoveAnchor_clicked(){
-
+    while(_ui->tableAnchors->selectedItems().size()){
+        _ui->tableAnchors->removeRow(_ui->tableAnchors->selectedItems().at(0)->row());
+    }
 }
 
 void MainWindow::On_buttonSaveAnchor_clicked(){
@@ -471,7 +482,13 @@ void MainWindow::On_buttonSaveAsAnchor_clicked(){
 }
 
 void MainWindow::On_buttonOpenAnchor_clicked(){
+    QString filename = QFileDialog::getOpenFileName(nullptr, "Open Anchors", "", "*.csv");
 
+    if(filename.size()){
+        _ui->tableAnchors->clearContents();
+        _ui->tableAnchors->setRowCount(0);
+        emit AnchorFileLoad(filename);
+    }
 }
 
 void MainWindow::On_lineFx_EditingFinished(){

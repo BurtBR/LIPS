@@ -272,6 +272,7 @@ void WorkerImageProcessing::ProcessFrame(QImage frame){
         FilterImage(frame);
 
         anchors = GroupSaturation(frame);
+        emit AnchorsOnFrame(anchors);
         for(int i=0; i<anchors.size() ;i++){
             p.setPen(Qt::red);
             p.drawRect(anchors[i]);

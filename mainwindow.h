@@ -22,9 +22,8 @@ private:
     int _frameBalance = 0;
 
     void DeleteThread(QThread **threadptr);
-    bool StartThreadVideo();
+    bool StartMainThreads();
     bool StartThreadFileHandling();
-    bool StartThreadPositioning();
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -96,6 +95,6 @@ signals:
     void FileLoadDefault();
     void AnchorFileLoad(QString);
     void SetAnchorSourceTable(QTableWidget*);
-    void UpdateAnchorsFromTable();
+    void ResetAnchorResults();
 };
 #endif // MAINWINDOW_H
