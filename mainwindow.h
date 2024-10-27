@@ -57,7 +57,6 @@ private slots:
     void On_buttonInsertAnchor_clicked();
     void On_buttonRemoveAnchor_clicked();
     void On_buttonSaveAnchor_clicked();
-    void On_buttonSaveAsAnchor_clicked();
     void On_buttonOpenAnchor_clicked();
     void On_lineFx_EditingFinished();
     void On_lineFy_EditingFinished();
@@ -94,6 +93,7 @@ signals:
     void SetP2(float);
     void FileLoadDefault();
     void AnchorFileLoad(QString);
+    void SaveAnchors(QString filename, QString Fx, QString Fy, QString Cx, QString Cy, QString K1, QString K2, QString P1, QString P2, QVector<QString> R, QTableWidget *anchortable);
     void SetAnchorSourceTable(QTableWidget*);
     void ResetAnchorResults();
 };

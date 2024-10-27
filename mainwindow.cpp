@@ -78,7 +78,6 @@ bool MainWindow::Init(){
     connect(_ui->buttonInsertAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonInsertAnchor_clicked);
     connect(_ui->buttonRemoveAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonRemoveAnchor_clicked);
     connect(_ui->buttonSaveAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonSaveAnchor_clicked);
-    connect(_ui->buttonSaveAsAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonSaveAsAnchor_clicked);
     connect(_ui->buttonOpenAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonOpenAnchor_clicked);
     connect(_ui->lineFx, &QLineEdit::editingFinished, this, &MainWindow::On_lineFx_EditingFinished);
     connect(_ui->lineFy, &QLineEdit::editingFinished, this, &MainWindow::On_lineFy_EditingFinished);
@@ -281,6 +280,7 @@ bool MainWindow::StartThreadFileHandling(){
 
     connect(this, &MainWindow::FileLoadDefault, worker, &WorkerFileHandler::GetDefaultValues);
     connect(this, &MainWindow::AnchorFileLoad, worker, &WorkerFileHandler::OpenAnchorFile);
+    connect(this, &MainWindow::SaveAnchors, worker, &WorkerFileHandler::SaveAnchors);
 
     connect(_ui->spinSaturation, &QSpinBox::valueChanged, worker, &WorkerFileHandler::SetSaturation);
     connect(_ui->spinScale, &QSpinBox::valueChanged, worker, &WorkerFileHandler::SetScaleWidth);
@@ -474,11 +474,31 @@ void MainWindow::On_buttonRemoveAnchor_clicked(){
 }
 
 void MainWindow::On_buttonSaveAnchor_clicked(){
+    QString filename = QFileDialog::getSaveFileName(nullptr, "Save Anchors", "", "*.csv");
 
-}
-
-void MainWindow::On_buttonSaveAsAnchor_clicked(){
-
+    if(filename.size()){
+        QVector<QString> R;
+        R.append(_ui->lineR11->text());
+        R.append(_ui->lineR12->text());
+        R.append(_ui->lineR13->text());
+        R.append(_ui->lineR21->text());
+        R.append(_ui->lineR22->text());
+        R.append(_ui->lineR23->text());
+        R.append(_ui->lineR31->text());
+        R.append(_ui->lineR32->text());
+        R.append(_ui->lineR33->text());
+        emit SaveAnchors(filename,
+                         _ui->lineFx->text(),
+                         _ui->lineFy->text(),
+                         _ui->lineCx->text(),
+                         _ui->lineCy->text(),
+                         _ui->lineK1->text(),
+                         _ui->lineK2->text(),
+                         _ui->lineP1->text(),
+                         _ui->lineP2->text(),
+                         R,
+                         _ui->tableAnchors);
+    }
 }
 
 void MainWindow::On_buttonOpenAnchor_clicked(){

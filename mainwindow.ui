@@ -459,19 +459,6 @@ QHeaderView::section {
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="buttonSaveAsAnchor">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Save As</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QToolButton" name="buttonOpenAnchor">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">

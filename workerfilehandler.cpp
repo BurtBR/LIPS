@@ -206,6 +206,39 @@ void WorkerFileHandler::SetClock(float value){
     _defaultfile_map[_CLOCK_SHIFT+3] = (auxvalue & 0xFF);
 }
 
+void WorkerFileHandler::SaveAnchors(QString filename, QString Fx, QString Fy,
+                                    QString Cx, QString Cy, QString K1, QString K2,
+                                    QString P1, QString P2, QVector<QString> R, QTableWidget *anchortable){
+
+    QFile fp(filename);
+
+    if(!fp.open(QIODevice::WriteOnly | QIODevice::Text)){
+        emit Message("<font color=\"Red\">WorkerFileHandler: Failed to save");
+        return;
+    }
+
+    QTextStream out(&fp);
+
+    out << "Fx;Fy\n" + Fx + ";" + Fy + "\n";
+    out << "Cx;Cy\n" + Cx + ";" + Cy + "\n";
+    out << "K1;K2\n" + K1 + ";" + K2 + "\n";
+    out << "P1;P2\n" + P1 + ";" + P2 + "\n";
+    out << ";" + R[0] + ";" + R[1] + ";" + R[2] + "\n";
+    out << "R;" + R[3] + ";" + R[4] + ";" + R[5] + "\n";
+    out << ";" + R[6] + ";" + R[7] + ";" + R[8] + "\n";
+    out << "Anchors\nCode;X;Y;Z";
+
+    for(int i=0; i<anchortable->rowCount() ;i++){
+        out << "\n" << anchortable->item(i,0)->text() << ";";
+        out << anchortable->item(i,1)->text() << ";";
+        out << anchortable->item(i,2)->text() << ";";
+        out << anchortable->item(i,2)->text();
+    }
+
+    fp.close();
+    emit Message("WorkerFileHandler: File saved " + fp.fileName());
+}
+
 void WorkerFileHandler::OpenAnchorFile(QString filename){
     if(!QFileInfo::exists(filename))
         return;
@@ -388,11 +421,6 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
             return;
         }
         emit AppendAnchor(strlist[0], strlist[1].toFloat(&ok1), strlist[2].toFloat(&ok2), strlist[3].toFloat(&ok3));
-        if(!ok1 || !ok2 || !ok3){
-            fp.close();
-            emit Message("WorkerFileHandler: Corrupted anchor file (Anchors)");
-            return;
-        }
     }
 
     fp.close();
