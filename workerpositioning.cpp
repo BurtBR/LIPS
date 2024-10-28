@@ -74,8 +74,14 @@ void WorkerPositioning::CheckCodes(){
                                  " X: " + _tableSource->item(tableidx,1)->text() +
                                  " Y: " + _tableSource->item(tableidx,2)->text() +
                                  " Z: " + _tableSource->item(tableidx,3)->text());
+                    _validAnchors.insert(code, _anchors[i]);
+                }else{
+                    if(!_validAnchors[code].im_pos.intersects(_anchors[i].im_pos)){
+                        emit Message("Anchor " + code + " moved to x: " + QString::number(_anchors[i].im_pos.x()) +
+                                     " y: " + QString::number(_anchors[i].im_pos.y()));
+                    }
+                    _validAnchors[code].im_pos = _anchors[i].im_pos;
                 }
-                _validAnchors.insert(code, _anchors[i]);
             }
             else
                 _anchors.remove(i--);
