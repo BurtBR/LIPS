@@ -232,11 +232,12 @@ void WorkerFileHandler::SaveAnchors(QString filename, QString Fx, QString Fy,
         out << "\n" << anchortable->item(i,0)->text() << ";";
         out << anchortable->item(i,1)->text() << ";";
         out << anchortable->item(i,2)->text() << ";";
-        out << anchortable->item(i,2)->text();
+        out << anchortable->item(i,3)->text();
     }
 
     fp.close();
     emit Message("WorkerFileHandler: File saved " + fp.fileName());
+    SetDefaultAnchorFilename(filename);
 }
 
 void WorkerFileHandler::OpenAnchorFile(QString filename){
@@ -424,4 +425,5 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
     }
 
     fp.close();
+    SetDefaultAnchorFilename(filename);
 }

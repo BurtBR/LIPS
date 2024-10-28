@@ -465,6 +465,10 @@ void MainWindow::On_buttonStop_clicked(){
 
 void MainWindow::On_buttonInsertAnchor_clicked(){
     _ui->tableAnchors->insertRow(0);
+    _ui->tableAnchors->setItem(0, 0, new QTableWidgetItem);
+    _ui->tableAnchors->setItem(0, 1, new QTableWidgetItem);
+    _ui->tableAnchors->setItem(0, 2, new QTableWidgetItem);
+    _ui->tableAnchors->setItem(0, 3, new QTableWidgetItem);
 }
 
 void MainWindow::On_buttonRemoveAnchor_clicked(){
