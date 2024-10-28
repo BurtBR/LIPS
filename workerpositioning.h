@@ -11,7 +11,7 @@ public:
         QString code;
         float X,Y,Z;
         QRect im_pos;
-        uint32_t frames[2];
+        uint32_t frames;
         bool found;
     };
 
@@ -25,6 +25,8 @@ private:
     void ResetFound();
     void ResetFrames();
     void InsertFound(QRect impos);
+    bool Validate(QString &code);
+    uint8_t Ones(QString code);
 
 public:
     WorkerPositioning(QObject *parent = nullptr);
