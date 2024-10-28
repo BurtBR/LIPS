@@ -190,5 +190,5 @@ void WorkerPositioning::SetFPS(float fps){
 
 void WorkerPositioning::SetClockFreq(float clock){
     _clockfreq = clock;
-    emit Message("WorkerPositioning: Symbols per second set to " + QString::number(_clockfreq));
+    emit Message("WorkerPositioning: Bits per second set to " + QString::number(_clockfreq));
 }
