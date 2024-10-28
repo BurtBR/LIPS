@@ -79,6 +79,7 @@ bool MainWindow::Init(){
     connect(_ui->buttonRemoveAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonRemoveAnchor_clicked);
     connect(_ui->buttonSaveAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonSaveAnchor_clicked);
     connect(_ui->buttonOpenAnchor, &QToolButton::clicked, this, &MainWindow::On_buttonOpenAnchor_clicked);
+    connect(_ui->buttonCloarConsole, &QToolButton::clicked, this, &MainWindow::On_buttonClearConsole_clicked);
     connect(_ui->lineFx, &QLineEdit::editingFinished, this, &MainWindow::On_lineFx_EditingFinished);
     connect(_ui->lineFy, &QLineEdit::editingFinished, this, &MainWindow::On_lineFy_EditingFinished);
     connect(_ui->lineCx, &QLineEdit::editingFinished, this, &MainWindow::On_lineCx_EditingFinished);
@@ -314,6 +315,7 @@ void MainWindow::VideoProgressChanged(int filled){
 void MainWindow::VideoEnded(){
     _isPlaying = false;
     _ui->buttonPlay->setIcon(QIcon(":/Figures/Play.png"));
+    emit ResetAnchorResults();
 }
 
 void MainWindow::VideoSentFrame(){
@@ -459,6 +461,7 @@ void MainWindow::On_buttonPlay_clicked(){
 
 void MainWindow::On_buttonStop_clicked(){
     emit VideoStop();
+    emit ResetAnchorResults();
     _ui->buttonPlay->setIcon(QIcon(":/Figures/Play.png"));
     _isPlaying = false;
 }
@@ -513,6 +516,10 @@ void MainWindow::On_buttonOpenAnchor_clicked(){
         _ui->tableAnchors->setRowCount(0);
         emit AnchorFileLoad(filename);
     }
+}
+
+void MainWindow::On_buttonClearConsole_clicked(){
+    _ui->textConsole->clear();
 }
 
 void MainWindow::On_lineFx_EditingFinished(){

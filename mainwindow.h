@@ -58,6 +58,7 @@ private slots:
     void On_buttonRemoveAnchor_clicked();
     void On_buttonSaveAnchor_clicked();
     void On_buttonOpenAnchor_clicked();
+    void On_buttonClearConsole_clicked();
     void On_lineFx_EditingFinished();
     void On_lineFy_EditingFinished();
     void On_lineCx_EditingFinished();

@@ -6,7 +6,7 @@ WorkerPositioning::WorkerPositioning(QObject *parent) : QObject{parent}{
 
 void WorkerPositioning::CheckCodes(){
 
-    uint8_t fps = qRound(_fps), transition, valuecounter, qtd;
+    uint8_t fps = qRound(_fps), transition, valuecounter, qtd, tableidx;
     bool waszero = false, value;
     QString code;
 
@@ -64,12 +64,21 @@ void WorkerPositioning::CheckCodes(){
                     qtd--;
                 }
             }
-            if(Validate(code))
-                emit Message("Found: " + code);
+            if(Validate(code,tableidx)){
+                if(!_validAnchors.contains(code)){
+                    _anchors[i].code = code;
+                    _anchors[i].X = _tableSource->item(tableidx,1)->text().toFloat();
+                    _anchors[i].Y = _tableSource->item(tableidx,2)->text().toFloat();
+                    _anchors[i].Z = _tableSource->item(tableidx,3)->text().toFloat();
+                    emit Message("Found: " + code +
+                                 " X: " + _tableSource->item(tableidx,1)->text() +
+                                 " Y: " + _tableSource->item(tableidx,2)->text() +
+                                 " Z: " + _tableSource->item(tableidx,3)->text());
+                }
+                _validAnchors.insert(code, _anchors[i]);
+            }
             else
                 _anchors.remove(i--);
-            // _anchors[j].frames[_framecounter/32] |= (1 << (31-(_framecounter%32)));
-            //emit Message("Found: " + QString::number(_anchors[i].frames,2).rightJustified(32,'0'));
         }
     }
 }
@@ -92,6 +101,7 @@ void WorkerPositioning::SetAnchorSource(QTableWidget *w){
 
 void WorkerPositioning::ResetResults(){
     _anchors.clear();
+    _validAnchors.clear();
     _framecounter = 0;
 }
 
@@ -111,13 +121,14 @@ void WorkerPositioning::InsertFound(QRect impos){
     _anchors.append(newanchor);
 }
 
-bool WorkerPositioning::Validate(QString &code){
+bool WorkerPositioning::Validate(QString &code, uint8_t &tableidx){
     uint8_t onescode = Ones(code), oneanchors;
     for(int i=0; i<_tableSource->rowCount() ;i++){
         oneanchors = Ones(_tableSource->item(i,0)->text());
         if(onescode == oneanchors){
             for(int j=0; j<code.size() ;j++){
                 if(code.compare(_tableSource->item(i,0)->text()) == 0){
+                    tableidx = i;
                     return true;
                 }else{
                     code.prepend(code[code.size()-1]);
@@ -126,6 +137,7 @@ bool WorkerPositioning::Validate(QString &code){
             }
         }
     }
+    tableidx = -1;
     return false;
 }
 

@@ -44,7 +44,6 @@ QLineEdit{
 QTextEdit{
 	font: 17pt &quot;Source Code Pro&quot;;
 	color: white;
-	border-color: transparent;
 }
 
 QCheckBox{
@@ -889,6 +888,30 @@ QHeaderView::section {
        <string>Console...</string>
       </property>
      </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QToolButton" name="buttonCloarConsole">
+        <property name="text">
+         <string>Clear Console</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTableWidget>
+#include <QMap>
 
 class WorkerPositioning : public QObject{
     Q_OBJECT
@@ -20,12 +21,13 @@ private:
     uint8_t _framecounter = 0;
     float _avgframespersymbol = 0, _fps = 1, _clockfreq = 1;
     QVector<Anchor> _anchors;
+    QMap<QString,Anchor> _validAnchors;
 
     void CheckCodes();
     void ResetFound();
     void ResetFrames();
     void InsertFound(QRect impos);
-    bool Validate(QString &code);
+    bool Validate(QString &code, uint8_t &tableidx);
     uint8_t Ones(QString code);
 
 public:
