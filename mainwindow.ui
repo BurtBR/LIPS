@@ -151,7 +151,7 @@ QHeaderView::section {
           <item>
            <widget class="QLabel" name="labelFrequency">
             <property name="text">
-             <string>Clock Frequency [Hz]:</string>
+             <string>Symbols per Second:</string>
             </property>
            </widget>
           </item>
