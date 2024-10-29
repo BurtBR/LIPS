@@ -71,14 +71,17 @@ void WorkerPositioning::CheckCodes(){
                     _anchors[i].Y = _tableSource->item(tableidx,2)->text().toFloat();
                     _anchors[i].Z = _tableSource->item(tableidx,3)->text().toFloat();
                     emit Message("Found: " + code +
-                                 " X: " + _tableSource->item(tableidx,1)->text() +
+                                 " - Real: X: " + _tableSource->item(tableidx,1)->text() +
                                  " Y: " + _tableSource->item(tableidx,2)->text() +
-                                 " Z: " + _tableSource->item(tableidx,3)->text());
+                                 " Z: " + _tableSource->item(tableidx,3)->text() +
+                                 "  - Image: x: " + QString::number(_anchors[i].im_pos.center().x()) +
+                                 " y: " + QString::number(_anchors[i].im_pos.center().y()));
                     _validAnchors.insert(code, _anchors[i]);
                 }else{
-                    if(!_validAnchors[code].im_pos.intersects(_anchors[i].im_pos)){
-                        emit Message("Anchor " + code + " moved to x: " + QString::number(_anchors[i].im_pos.x()) +
-                                     " y: " + QString::number(_anchors[i].im_pos.y()));
+                    //if(!_validAnchors[code].im_pos.intersects(_anchors[i].im_pos)){
+                    if((_validAnchors[code].im_pos.center() - _anchors[i].im_pos.center()).manhattanLength()>3){
+                        emit Message("Anchor " + code + " moved to x: " + QString::number(_anchors[i].im_pos.center().x()) +
+                                     " y: " + QString::number(_anchors[i].im_pos.center().y()));
                     }
                     _validAnchors[code].im_pos = _anchors[i].im_pos;
                 }
