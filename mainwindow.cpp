@@ -88,15 +88,16 @@ bool MainWindow::Init(){
     connect(_ui->lineK2, &QLineEdit::editingFinished, this, &MainWindow::On_lineK2_EditingFinished);
     connect(_ui->lineP1, &QLineEdit::editingFinished, this, &MainWindow::On_lineP1_EditingFinished);
     connect(_ui->lineP2, &QLineEdit::editingFinished, this, &MainWindow::On_lineP2_EditingFinished);
-    connect(_ui->lineR11, &QLineEdit::editingFinished, this, &MainWindow::On_lineR11_EditingFinished);
-    connect(_ui->lineR12, &QLineEdit::editingFinished, this, &MainWindow::On_lineR12_EditingFinished);
-    connect(_ui->lineR13, &QLineEdit::editingFinished, this, &MainWindow::On_lineR13_EditingFinished);
-    connect(_ui->lineR21, &QLineEdit::editingFinished, this, &MainWindow::On_lineR21_EditingFinished);
-    connect(_ui->lineR22, &QLineEdit::editingFinished, this, &MainWindow::On_lineR22_EditingFinished);
-    connect(_ui->lineR23, &QLineEdit::editingFinished, this, &MainWindow::On_lineR23_EditingFinished);
-    connect(_ui->lineR31, &QLineEdit::editingFinished, this, &MainWindow::On_lineR31_EditingFinished);
-    connect(_ui->lineR32, &QLineEdit::editingFinished, this, &MainWindow::On_lineR32_EditingFinished);
-    connect(_ui->lineR33, &QLineEdit::editingFinished, this, &MainWindow::On_lineR33_EditingFinished);
+    connect(_ui->lineS, &QLineEdit::editingFinished, this, &MainWindow::On_lineS_EditingFinished);
+    connect(_ui->lineR11, &QLineEdit::editingFinished, this, &MainWindow::SendRMatrix);
+    connect(_ui->lineR12, &QLineEdit::editingFinished, this, &MainWindow::SendRMatrix);
+    connect(_ui->lineR13, &QLineEdit::editingFinished, this, &MainWindow::SendRMatrix);
+    connect(_ui->lineR21, &QLineEdit::editingFinished, this, &MainWindow::SendRMatrix);
+    connect(_ui->lineR22, &QLineEdit::editingFinished, this, &MainWindow::SendRMatrix);
+    connect(_ui->lineR23, &QLineEdit::editingFinished, this, &MainWindow::SendRMatrix);
+    connect(_ui->lineR31, &QLineEdit::editingFinished, this, &MainWindow::SendRMatrix);
+    connect(_ui->lineR32, &QLineEdit::editingFinished, this, &MainWindow::SendRMatrix);
+    connect(_ui->lineR33, &QLineEdit::editingFinished, this, &MainWindow::SendRMatrix);
 
     _ui->tableAnchors->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     _ui->tableAnchors->setHorizontalHeaderLabels({"Anchor Code", "Position X", "Position Y", "Position Z"});
@@ -106,6 +107,41 @@ bool MainWindow::Init(){
     On_comboPosModel_currentIndexChanged(_ui->comboPosModel->currentIndex());
 
     return true;
+}
+
+void MainWindow::SendRMatrix(){
+    QMatrix3x3 R;
+    bool ok;
+
+    R.data()[0] = _ui->lineR11->text().toFloat(&ok);
+    if(!ok)
+        return;
+    R.data()[1] = _ui->lineR21->text().toFloat(&ok);
+    if(!ok)
+        return;
+    R.data()[2] = _ui->lineR31->text().toFloat(&ok);
+    if(!ok)
+        return;
+    R.data()[3] = _ui->lineR12->text().toFloat(&ok);
+    if(!ok)
+        return;
+    R.data()[4] = _ui->lineR22->text().toFloat(&ok);
+    if(!ok)
+        return;
+    R.data()[5] = _ui->lineR32->text().toFloat(&ok);
+    if(!ok)
+        return;
+    R.data()[6] = _ui->lineR13->text().toFloat(&ok);
+    if(!ok)
+        return;
+    R.data()[7] = _ui->lineR23->text().toFloat(&ok);
+    if(!ok)
+        return;
+    R.data()[8] = _ui->lineR33->text().toFloat(&ok);
+    if(!ok)
+        return;
+
+    emit SetRMatrix(R);
 }
 
 bool MainWindow::StartMainThreads(){
@@ -221,6 +257,11 @@ bool MainWindow::StartMainThreads(){
     connect(this, &MainWindow::SetP1, workerImage, &WorkerImageProcessing::SetP1);
     connect(this, &MainWindow::SetP2, workerImage, &WorkerImageProcessing::SetP2);
 
+    connect(this, &MainWindow::SetFx, workerPosition, &WorkerPositioning::SetFx);
+    connect(this, &MainWindow::SetFy, workerPosition, &WorkerPositioning::SetFy);
+    connect(this, &MainWindow::SetCx, workerPosition, &WorkerPositioning::SetCx);
+    connect(this, &MainWindow::SetCy, workerPosition, &WorkerPositioning::SetCy);
+    connect(this, &MainWindow::SetRMatrix, workerPosition, &WorkerPositioning::SetR);
     connect(this, &MainWindow::SetPositioningModel, workerPosition, &WorkerPositioning::SetCurrentModel);
     connect(this, &MainWindow::SetAnchorSourceTable, workerPosition, &WorkerPositioning::SetAnchorSource);
     connect(this, &MainWindow::ResetAnchorResults, workerPosition, &WorkerPositioning::ResetResults);
@@ -279,6 +320,7 @@ bool MainWindow::StartThreadFileHandling(){
     connect(worker, &WorkerFileHandler::SetK2, this, &MainWindow::SetK2FromFile);
     connect(worker, &WorkerFileHandler::SetP1, this, &MainWindow::SetP1FromFile);
     connect(worker, &WorkerFileHandler::SetP2, this, &MainWindow::SetP2FromFile);
+    connect(worker, &WorkerFileHandler::SetS, this, &MainWindow::SetSFromFile);
     connect(worker, &WorkerFileHandler::SetRmatrix, this, &MainWindow::SetRmatrix);
     connect(worker, &WorkerFileHandler::AppendAnchor, this, &MainWindow::AppendAnchorFromFile);
 
@@ -387,6 +429,11 @@ void MainWindow::SetP1FromFile(QString value){
 void MainWindow::SetP2FromFile(QString value){
     _ui->lineP2->setText(value);
     emit _ui->lineP2->editingFinished();
+}
+
+void MainWindow::SetSFromFile(QString value){
+    _ui->lineS->setText(value);
+    emit _ui->lineS->editingFinished();
 }
 
 void MainWindow::SetRmatrix(QMatrix3x3 rmatrix){
@@ -522,6 +569,7 @@ void MainWindow::On_buttonSaveAnchor_clicked(){
                          _ui->lineK2->text(),
                          _ui->lineP1->text(),
                          _ui->lineP2->text(),
+                         _ui->lineS->text(),
                          R,
                          _ui->tableAnchors);
     }
@@ -573,38 +621,6 @@ void MainWindow::On_lineP2_EditingFinished(){
     emit SetP2(_ui->lineP2->text().toFloat());
 }
 
-void MainWindow::On_lineR11_EditingFinished(){
-
-}
-
-void MainWindow::On_lineR12_EditingFinished(){
-
-}
-
-void MainWindow::On_lineR13_EditingFinished(){
-
-}
-
-void MainWindow::On_lineR21_EditingFinished(){
-
-}
-
-void MainWindow::On_lineR22_EditingFinished(){
-
-}
-
-void MainWindow::On_lineR23_EditingFinished(){
-
-}
-
-void MainWindow::On_lineR31_EditingFinished(){
-
-}
-
-void MainWindow::On_lineR32_EditingFinished(){
-
-}
-
-void MainWindow::On_lineR33_EditingFinished(){
-
+void MainWindow::On_lineS_EditingFinished(){
+    emit SetS(_ui->lineS->text().toFloat());
 }

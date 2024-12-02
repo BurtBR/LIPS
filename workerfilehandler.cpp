@@ -208,7 +208,8 @@ void WorkerFileHandler::SetClock(float value){
 
 void WorkerFileHandler::SaveAnchors(QString filename, QString Fx, QString Fy,
                                     QString Cx, QString Cy, QString K1, QString K2,
-                                    QString P1, QString P2, QVector<QString> R, QTableWidget *anchortable){
+                                    QString P1, QString P2, QString S,
+                                    QVector<QString> R, QTableWidget *anchortable){
 
     QFile fp(filename);
 
@@ -223,6 +224,7 @@ void WorkerFileHandler::SaveAnchors(QString filename, QString Fx, QString Fy,
     out << "Cx;Cy\n" + Cx + ";" + Cy + "\n";
     out << "K1;K2\n" + K1 + ";" + K2 + "\n";
     out << "P1;P2\n" + P1 + ";" + P2 + "\n";
+    out << "S\n" + S + "\n";
     out << ";" + R[0] + ";" + R[1] + ";" + R[2] + "\n";
     out << "R;" + R[3] + ";" + R[4] + ";" + R[5] + "\n";
     out << ";" + R[6] + ";" + R[7] + ";" + R[8] + "\n";
@@ -336,6 +338,18 @@ void WorkerFileHandler::OpenAnchorFile(QString filename){
 
     emit SetP1(strlist[0]);
     emit SetP2(strlist[1]);
+
+    line = in.readLine();
+
+    if(line.compare("S") != 0){
+        fp.close();
+        emit Message("WorkerFileHandler: Corrupted anchor file S");
+        return;
+    }
+
+    line = in.readLine();
+
+    emit SetS(line);
 
     line = in.readLine();
     strlist = line.split(';');

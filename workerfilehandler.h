@@ -29,7 +29,7 @@ public slots:
     void SetLaserMax(uint32_t value);
     void SetLaserMin(uint32_t value);
     void SetClock(float value);
-    void SaveAnchors(QString filename, QString Fx, QString Fy, QString Cx, QString Cy, QString K1, QString K2, QString P1, QString P2, QVector<QString> R, QTableWidget *anchortable);
+    void SaveAnchors(QString filename, QString Fx, QString Fy, QString Cx, QString Cy, QString K1, QString K2, QString P1, QString P2, QString S, QVector<QString> R, QTableWidget *anchortable);
     void OpenAnchorFile(QString filename);
 
 signals:
@@ -43,6 +43,7 @@ signals:
     void SetK2(QString);
     void SetP1(QString);
     void SetP2(QString);
+    void SetS(QString);
     void SetRmatrix(QMatrix3x3);
     void AppendAnchor(QString,float,float,float);
 };

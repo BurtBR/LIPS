@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTableWidget>
 #include <QMap>
+#include <QMatrix3x3>
 
 class WorkerPositioning : public QObject{
     Q_OBJECT
@@ -27,6 +28,7 @@ private:
     uint8_t _framecounter = 0;
     float _avgframespersymbol = 0, _fps = 1, _clockfreq = 1;
     QVector<Anchor> _anchors;
+    QMatrix3x3 _K, _R;
     QMap<QString,Anchor> _validAnchors;
     PositioningModel _currModel = PositioningModel::Trilateration;
 
@@ -48,6 +50,11 @@ public slots:
     void AnchorsInFrame(QVector<QRect> found);
     void SetFPS(float fps);
     void SetClockFreq(float clock);
+    void SetFx(float value);
+    void SetFy(float value);
+    void SetCx(float value);
+    void SetCy(float value);
+    void SetR(QMatrix3x3 R);
 
 signals:
     void Message(QString);

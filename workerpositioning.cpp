@@ -1,7 +1,9 @@
 #include "workerpositioning.h"
 
 WorkerPositioning::WorkerPositioning(QObject *parent) : QObject{parent}{
-
+    _K.fill(0);
+    _K.data()[8] = 1;
+    _R.fill(0);
 }
 
 QString WorkerPositioning::GetModelStr(PositioningModel modeltype){
@@ -222,4 +224,28 @@ void WorkerPositioning::SetFPS(float fps){
 void WorkerPositioning::SetClockFreq(float clock){
     _clockfreq = clock;
     emit Message("WorkerPositioning: Bits per second set to " + QString::number(_clockfreq));
+}
+
+void WorkerPositioning::SetFx(float value){
+    _K.data()[0] = value;
+}
+
+void WorkerPositioning::SetFy(float value){
+    _K.data()[4] = value;
+}
+
+void WorkerPositioning::SetCx(float value){
+    _K.data()[6] = value;
+}
+
+void WorkerPositioning::SetCy(float value){
+    _K.data()[7] = value;
+}
+
+void WorkerPositioning::SetR(QMatrix3x3 R){
+    _R = R;
+    emit Message(QString("WorkerPositioning: R set to\n") +
+                 "\t" + QString::number(R.data()[0]) + " " + QString::number(R.data()[3]) + " " + QString::number(R.data()[6]) + "\n" +
+                 "R=\t" + QString::number(R.data()[1]) + " " + QString::number(R.data()[4]) + " " + QString::number(R.data()[7]) + "\n" +
+                 "\t" + QString::number(R.data()[2]) + " " + QString::number(R.data()[5]) + " " + QString::number(R.data()[8]));
 }

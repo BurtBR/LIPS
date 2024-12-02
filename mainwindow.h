@@ -32,6 +32,7 @@ public:
     ~MainWindow();
 
     bool Init();
+    void SendRMatrix();
 
 private slots:
     void ConsoleMessage(QString text);
@@ -48,6 +49,7 @@ private slots:
     void SetK2FromFile(QString value);
     void SetP1FromFile(QString value);
     void SetP2FromFile(QString value);
+    void SetSFromFile(QString value);
     void SetRmatrix(QMatrix3x3 rmatrix);
     void AppendAnchorFromFile(QString code, float X, float Y, float Z);
     void On_comboPosModel_currentIndexChanged(int idx);
@@ -70,15 +72,7 @@ private slots:
     void On_lineK2_EditingFinished();
     void On_lineP1_EditingFinished();
     void On_lineP2_EditingFinished();
-    void On_lineR11_EditingFinished();
-    void On_lineR12_EditingFinished();
-    void On_lineR13_EditingFinished();
-    void On_lineR21_EditingFinished();
-    void On_lineR22_EditingFinished();
-    void On_lineR23_EditingFinished();
-    void On_lineR31_EditingFinished();
-    void On_lineR32_EditingFinished();
-    void On_lineR33_EditingFinished();
+    void On_lineS_EditingFinished();
 
 signals:
     void VideoPlayerInit();
@@ -96,9 +90,11 @@ signals:
     void SetK2(float);
     void SetP1(float);
     void SetP2(float);
+    void SetS(float);
+    void SetRMatrix(QMatrix3x3);
     void FileLoadDefault();
     void AnchorFileLoad(QString);
-    void SaveAnchors(QString filename, QString Fx, QString Fy, QString Cx, QString Cy, QString K1, QString K2, QString P1, QString P2, QVector<QString> R, QTableWidget *anchortable);
+    void SaveAnchors(QString filename, QString Fx, QString Fy, QString Cx, QString Cy, QString K1, QString K2, QString P1, QString P2, QString S, QVector<QString> R, QTableWidget *anchortable);
     void SetAnchorSourceTable(QTableWidget*);
     void ResetAnchorResults();
 };
