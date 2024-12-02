@@ -8,6 +8,12 @@
 class WorkerPositioning : public QObject{
     Q_OBJECT
 public:
+    enum class PositioningModel{
+        Trilateration,
+        Proportions,
+        Pinhole
+    };
+
     struct Anchor{
         QString code;
         float X,Y,Z;
@@ -22,6 +28,7 @@ private:
     float _avgframespersymbol = 0, _fps = 1, _clockfreq = 1;
     QVector<Anchor> _anchors;
     QMap<QString,Anchor> _validAnchors;
+    PositioningModel _currModel = PositioningModel::Trilateration;
 
     void CheckCodes();
     void ResetFound();
@@ -32,8 +39,10 @@ private:
 
 public:
     WorkerPositioning(QObject *parent = nullptr);
+    static QString GetModelStr(PositioningModel modeltype);
 
 public slots:
+    void SetCurrentModel(PositioningModel model);
     void SetAnchorSource(QTableWidget *w);
     void ResetResults();
     void AnchorsInFrame(QVector<QRect> found);

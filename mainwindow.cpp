@@ -6,7 +6,6 @@
 #include "workervideo.h"
 #include "workerimageprocessing.h"
 #include "workerfilehandler.h"
-#include "workerpositioning.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
@@ -69,6 +68,7 @@ bool MainWindow::Init(){
         return false;
     }
 
+    connect(_ui->comboPosModel, &QComboBox::currentIndexChanged, this, &MainWindow::On_comboPosModel_currentIndexChanged);
     connect(_ui->buttonOpenFile, &QToolButton::clicked, this, &MainWindow::On_buttonOpenFile_clicked);
     connect(_ui->buttonPlay, &QToolButton::clicked, this, &MainWindow::On_buttonPlay_clicked);
     connect(_ui->buttonStop, &QToolButton::clicked, this, &MainWindow::On_buttonStop_clicked);
@@ -102,6 +102,8 @@ bool MainWindow::Init(){
     _ui->tableAnchors->setHorizontalHeaderLabels({"Anchor Code", "Position X", "Position Y", "Position Z"});
 
     emit FileLoadDefault();
+
+    On_comboPosModel_currentIndexChanged(_ui->comboPosModel->currentIndex());
 
     return true;
 }
@@ -219,6 +221,7 @@ bool MainWindow::StartMainThreads(){
     connect(this, &MainWindow::SetP1, workerImage, &WorkerImageProcessing::SetP1);
     connect(this, &MainWindow::SetP2, workerImage, &WorkerImageProcessing::SetP2);
 
+    connect(this, &MainWindow::SetPositioningModel, workerPosition, &WorkerPositioning::SetCurrentModel);
     connect(this, &MainWindow::SetAnchorSourceTable, workerPosition, &WorkerPositioning::SetAnchorSource);
     connect(this, &MainWindow::ResetAnchorResults, workerPosition, &WorkerPositioning::ResetResults);
 
@@ -415,6 +418,22 @@ void MainWindow::AppendAnchorFromFile(QString code, float X, float Y, float Z){
     _ui->tableAnchors->setItem(index, 1, new QTableWidgetItem(QString::number(X)));
     _ui->tableAnchors->setItem(index, 2, new QTableWidgetItem(QString::number(Y)));
     _ui->tableAnchors->setItem(index, 3, new QTableWidgetItem(QString::number(Z)));
+}
+
+void MainWindow::On_comboPosModel_currentIndexChanged(int idx){
+    switch(idx){
+    case 0:
+        emit SetPositioningModel(WorkerPositioning::PositioningModel::Trilateration);
+        break;
+    case 1:
+        emit SetPositioningModel(WorkerPositioning::PositioningModel::Proportions);
+        break;
+    case 2:
+        emit SetPositioningModel(WorkerPositioning::PositioningModel::Pinhole);
+        break;
+    default:
+        break;
+    }
 }
 
 void MainWindow::On_checkSaturation_stateChanged(bool value){

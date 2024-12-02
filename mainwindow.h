@@ -6,6 +6,8 @@
 #include <QMatrix3x3>
 #include <QTableWidget>
 
+#include "workerpositioning.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class MainWindow;
@@ -48,6 +50,7 @@ private slots:
     void SetP2FromFile(QString value);
     void SetRmatrix(QMatrix3x3 rmatrix);
     void AppendAnchorFromFile(QString code, float X, float Y, float Z);
+    void On_comboPosModel_currentIndexChanged(int idx);
     void On_checkSaturation_stateChanged(bool value);
     void On_checkFilter_stateChanged(bool value);
     void On_checkPositioning_stateChanged(bool value);
@@ -84,6 +87,7 @@ signals:
     void VideoPause();
     void VideoStop();
     void SetVideoGrayscale(bool);
+    void SetPositioningModel(WorkerPositioning::PositioningModel model);
     void SetFx(float);
     void SetFy(float);
     void SetCx(float);

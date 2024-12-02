@@ -57,6 +57,12 @@ QSpinBox{
 	background-color: rgb(120, 120, 120);
 }
 
+QComboBox{
+	font: 12pt &quot;Source Code Pro&quot;;
+	color: white;
+	background-color: rgb(120, 120, 120);
+}
+
 QDoubleSpinBox{
 	font: 12pt &quot;Source Code Pro&quot;;
 	color: white;
@@ -198,6 +204,35 @@ QHeaderView::section {
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Positioning Model:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboPosModel">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Trilateration</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Proportions</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Pinhole Model</string>
+             </property>
+            </item>
+           </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="checkSaturation">

@@ -4,6 +4,23 @@ WorkerPositioning::WorkerPositioning(QObject *parent) : QObject{parent}{
 
 }
 
+QString WorkerPositioning::GetModelStr(PositioningModel modeltype){
+    switch(modeltype){
+    case PositioningModel::Trilateration:
+        return "Trilateration";
+        break;
+    case PositioningModel::Proportions:
+        return "Proportions";
+        break;
+    case PositioningModel::Pinhole:
+        return "Pinhole";
+        break;
+    default:
+        return QString();
+        break;
+    }
+}
+
 void WorkerPositioning::CheckCodes(){
 
     uint8_t fps = qRound(_fps), transition, valuecounter, qtd, tableidx;
@@ -102,6 +119,11 @@ void WorkerPositioning::ResetFrames(){
     for(int i=0; i<_anchors.size() ;i++){
         _anchors[i].frames = 0;
     }
+}
+
+void WorkerPositioning::SetCurrentModel(PositioningModel model){
+    _currModel = model;
+    emit Message("WorkerPositioning: Positioning model set to " + GetModelStr(_currModel));
 }
 
 void WorkerPositioning::SetAnchorSource(QTableWidget *w){
