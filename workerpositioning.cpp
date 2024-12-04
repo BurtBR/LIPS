@@ -1,5 +1,7 @@
 #include "workerpositioning.h"
 
+#include <QtMath>
+
 WorkerPositioning::WorkerPositioning(QObject *parent) : QObject{parent}{
     _K.fill(0);
     _K.data()[8] = 1;
@@ -183,11 +185,46 @@ uint8_t WorkerPositioning::Ones(QString code){
     return result;
 }
 
+void WorkerPositioning::Positioning(){
+    float height = CalculateHeight();
+    //emit Message("Height = " + QString::number(height,'f',2));
+}
+
+float WorkerPositioning::CalculateHeight(){
+    if(_anchors.size() < 2)
+        return 0;
+
+    float dPixel, dReal, ratio, realsize, height;
+
+    qDebug() << _anchors.size();
+
+    for(int i=0; i<_anchors.size() ;i++){
+
+    }
+
+    dPixel = PDistance(QPair<float,float>(_anchors[0].im_pos.center().x(), _anchors[0].im_pos.center().y()),
+                       QPair<float,float>(_anchors[1].im_pos.center().x(), _anchors[1].im_pos.center().y()) );
+    dReal = PDistance(QPair<float,float>(_anchors[0].X, _anchors[0].Y), QPair<float,float>(_anchors[1].X, _anchors[1].Y));
+
+    ratio = dReal/dPixel;
+    realsize = _imagesize.first*ratio;
+
+    //qDebug() << (realsize/(2 * qTan( (M_PI*(cameraangle/180)) / 2) ));
+
+    return (_anchors[0].Z - (realsize/(2 * qTan( (M_PI*(_AOV/180)) / 2) )));
+
+}
+
+float WorkerPositioning::PDistance(const QPair<float,float> &p1, const QPair<float,float> &p2){
+    return qSqrt((p1.first-p2.first)*(p1.first-p2.first) + (p1.second-p2.second)*(p1.second-p2.second));
+}
+
 void WorkerPositioning::AnchorsInFrame(QVector<QRect> found){
     if(_framecounter >= qRound(_fps)){
         _framecounter = 0;
         CheckCodes();
         ResetFrames();
+        Positioning();
     }
 
     bool alreadyadded = false;
@@ -213,6 +250,11 @@ void WorkerPositioning::AnchorsInFrame(QVector<QRect> found){
     _framecounter++;
 }
 
+void WorkerPositioning::SetImageSize(qsizetype width, qsizetype height){
+    _imagesize.first = width;
+    _imagesize.second = height;
+}
+
 void WorkerPositioning::SetFPS(float fps){
     if(fps > 32)
         emit Message("WorkerPositioning: FPS is too high. Logic will not work");
@@ -228,24 +270,35 @@ void WorkerPositioning::SetClockFreq(float clock){
 
 void WorkerPositioning::SetFx(float value){
     _K.data()[0] = value;
+    emit Message("WorkerPositioning: Fx set to " + QString::number(value));
 }
 
 void WorkerPositioning::SetFy(float value){
     _K.data()[4] = value;
+    emit Message("WorkerPositioning: Fy set to " + QString::number(value));
 }
 
 void WorkerPositioning::SetCx(float value){
     _K.data()[6] = value;
+    emit Message("WorkerPositioning: Cx set to " + QString::number(value));
 }
 
 void WorkerPositioning::SetCy(float value){
     _K.data()[7] = value;
+    emit Message("WorkerPositioning: Cy set to " + QString::number(value));
+}
+
+void WorkerPositioning::SetS(float value){
+    _s = value;
+    emit Message("WorkerPositioning: Scale factor s set to " + QString::number(value));
 }
 
 void WorkerPositioning::SetR(QMatrix3x3 R){
-    _R = R;
-    emit Message(QString("WorkerPositioning: R set to\n") +
-                 "\t" + QString::number(R.data()[0]) + " " + QString::number(R.data()[3]) + " " + QString::number(R.data()[6]) + "\n" +
-                 "R=\t" + QString::number(R.data()[1]) + " " + QString::number(R.data()[4]) + " " + QString::number(R.data()[7]) + "\n" +
-                 "\t" + QString::number(R.data()[2]) + " " + QString::number(R.data()[5]) + " " + QString::number(R.data()[8]));
+    if(_R != R){
+        _R = R;
+        emit Message(QString("WorkerPositioning: R set to\n") +
+                     "\t" + QString::number(R.data()[0]) + " " + QString::number(R.data()[3]) + " " + QString::number(R.data()[6]) + "\n" +
+                     "R=\t" + QString::number(R.data()[1]) + " " + QString::number(R.data()[4]) + " " + QString::number(R.data()[7]) + "\n" +
+                     "\t" + QString::number(R.data()[2]) + " " + QString::number(R.data()[5]) + " " + QString::number(R.data()[8]));
+    }
 }

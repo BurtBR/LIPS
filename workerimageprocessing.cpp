@@ -266,6 +266,8 @@ void WorkerImageProcessing::ProcessFrame(QImage frame){
         QImage frameaux = frame.convertToFormat(QImage::Format_ARGB32);
         QVector<QRect> anchors;
 
+        emit SetImageSize(frame.width(), frame.height());
+
         QPainter p(&frameaux);
 
         ThresholdImage(frame);

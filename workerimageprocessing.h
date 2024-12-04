@@ -50,6 +50,7 @@ signals:
     void FrameReady(QPixmap frame);
     void Message(QString);
     void AnchorsOnFrame(QVector<QRect>);
+    void SetImageSize(qsizetype width, qsizetype length);
 };
 
 #endif // WORKERIMAGEPROCESSING_H

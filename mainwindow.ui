@@ -105,7 +105,7 @@ QHeaderView::section {
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabPositioning">
        <attribute name="title">
@@ -713,7 +713,7 @@ QHeaderView::section {
             <item row="4" column="0">
              <widget class="QLabel" name="label_12">
               <property name="text">
-               <string>S =</string>
+               <string>s =</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -726,7 +726,27 @@ QHeaderView::section {
                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
               </property>
               <property name="placeholderText">
-               <string>S</string>
+               <string>s</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QLabel" name="label_13">
+              <property name="text">
+               <string>AOV=</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="3">
+             <widget class="QLineEdit" name="lineAOV">
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+              </property>
+              <property name="placeholderText">
+               <string>Camera AOV°</string>
               </property>
              </widget>
             </item>

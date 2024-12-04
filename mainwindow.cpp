@@ -9,6 +9,7 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
+    _ui->tabWidget->setCurrentWidget(_ui->tabPositioning);
 }
 
 MainWindow::~MainWindow(){
@@ -236,6 +237,7 @@ bool MainWindow::StartMainThreads(){
     connect(workerPosition, &WorkerPositioning::Message, this, &MainWindow::ConsoleMessage);
 
     connect(workerImage, &WorkerImageProcessing::AnchorsOnFrame, workerPosition, &WorkerPositioning::AnchorsInFrame);
+    connect(workerImage, &WorkerImageProcessing::SetImageSize, workerPosition, &WorkerPositioning::SetImageSize);
 
     connect(worker, &WorkerVideo::VideoFPSChanged, workerPosition, &WorkerPositioning::SetFPS);
 
@@ -261,6 +263,7 @@ bool MainWindow::StartMainThreads(){
     connect(this, &MainWindow::SetFy, workerPosition, &WorkerPositioning::SetFy);
     connect(this, &MainWindow::SetCx, workerPosition, &WorkerPositioning::SetCx);
     connect(this, &MainWindow::SetCy, workerPosition, &WorkerPositioning::SetCy);
+    connect(this, &MainWindow::SetS, workerPosition, &WorkerPositioning::SetS);
     connect(this, &MainWindow::SetRMatrix, workerPosition, &WorkerPositioning::SetR);
     connect(this, &MainWindow::SetPositioningModel, workerPosition, &WorkerPositioning::SetCurrentModel);
     connect(this, &MainWindow::SetAnchorSourceTable, workerPosition, &WorkerPositioning::SetAnchorSource);
@@ -366,11 +369,11 @@ void MainWindow::VideoEnded(){
 void MainWindow::VideoSentFrame(){
     _frameBalance++;
 
-    if(_frameBalance > 5){
-        ConsoleMessage("<font color=\"Red\">MainWindow: " + QString::number(_frameBalance) + " frames behind");
-    }
-
     if(_ui->checkStopSync->isChecked()){
+        if(_frameBalance > 5){
+            ConsoleMessage("<font color=\"Red\">MainWindow: " + QString::number(_frameBalance) + " frames behind");
+        }
+
         if(_frameBalance > 15){
             On_buttonStop_clicked();
             ConsoleMessage("<font color=\"Red\">MainWindow: Video interrupted due to inability to maintain sync with the video");
