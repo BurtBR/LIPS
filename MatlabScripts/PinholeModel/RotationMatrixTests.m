@@ -40,7 +40,7 @@ function main()
     % Alpha (0-360), Beta (0-360), Gamma (0-360)
     ShowAllAnglePoints(0:20:360, 0:20:360, 0:20:360);
 
-    ShowAllSimultaneousSolutions(0:5:360, 0:5:360, 0:5:360, 50);
+    ShowAllSimultaneousSolutions(0:5:360, 0:5:360, 0:5:360, 20);
     
     function distance = DistanceP(P1, P2)
         distance = sqrt((P1(1)-P2(1))^2 + (P1(2)-P2(2))^2 + (P1(3)-P2(3))^2);
@@ -142,7 +142,7 @@ function main()
                     SetLaser(L3);
                     t3 = CalculateT();
 
-                    error = DistanceP(t1, t) + DistanceP(t2, t) + DistanceP(t3, t);
+                    error = (DistanceP(t1, t) + DistanceP(t2, t) + DistanceP(t3, t))/3;
                     if(error < maxerror)
                         allresults = [allresults [a;b;g]*180/pi];
                         if isempty(bestresult)
